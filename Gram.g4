@@ -10,7 +10,6 @@ MUL: '*';
 DIV: '/';
 MOD: '%';
 POW: '**';
-ROT: '//';
 
 SIN: 'sin';
 COS: 'cos';
@@ -33,14 +32,14 @@ WHILE: 'while';
 PRINT: 'print';
 SCAN: 'scan';
 
-NUMBER: [0-9]+ '.' [0-9]+;
+NUMBER: [0-9]+ ('.'[0-9]+)?;
 VARIABLE: 'X' [0-9];
 
 comparisson_type: EQ | NEQ | LE | LEQ | GE | GEQ;
 
 logic_operator: AND | OR;
 
-aritmetic_operator: ADD | SUB | MUL | DIV | MOD | POW | ROT;
+aritmetic_operator: ADD | SUB | MUL | DIV | MOD | POW;
 
 trigonometric_operator: SIN | COS;
 
@@ -56,25 +55,25 @@ expr:
 	| scan_call
 	| assignment;
 
-block: '{' expr+ '}';
+block: '{' NEWLINE* expr+ NEWLINE*'}';
 
 // ----- IF -----
-if_statement: IF '(' if_condition ')' block;
+if_statement: IF '(' if_condition ')' NEWLINE? block;
 
 if_condition:
 	value comparisson_type value
 	| if_condition logic_operator if_condition;
 
 // ----- WHILE -----
-while_loop: WHILE '(' if_condition ')' block;
+while_loop: WHILE '(' if_condition ')' NEWLINE? block;
 
 // ----- ASSIGNMENT -----
 assignment: VARIABLE '=' value;
 
 // ----- NUMBER EXPRESSION -----
 num_expr:
-	'(' expr aritmetic_operator expr ')'
-	| trigonometric_operator '(' expr ')'
+	'(' num_expr aritmetic_operator num_expr ')'
+	| trigonometric_operator '(' num_expr ')'
 	| NUMBER
 	| VARIABLE;
 
