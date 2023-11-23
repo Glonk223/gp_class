@@ -1,122 +1,85 @@
-
 grammar Gram;
 
-WS: ' ' -> skip;
+
+WS: [ \t\r]+ -> skip;
+NEWLINE: '\n';
 
 ADD: '+';
-SUBSTRACT: '-';
-MULTIPLY: '*';
-DIVIDE:  '/';
-EQ: '=';
-COMA : ',';
-LPAREN: '(';
-RPAREN: ')';
-LCURL: '{';
-RCURL: '}';
-LTHAN: '<';
-GTHAN: '>';
-LE: '<=';
-GE: '>=';
-EQEQ: '==';
-NOTEQ: '!=';
+SUB: '-';
+MUL: '*';
+DIV: '/';
+MOD: '%';
+POW: '**';
+ROT: '//';
+
+SIN: 'sin';
+COS: 'cos';
+
+ASS: '=';
+
+EQ: '==';
+NEQ: '!=';
+LE: '<';
+LEQ: '<=';
+GE: '>';
+GEQ: '>=';
+
 AND: '&&';
 OR: '||';
-SINGLE_QUOTE: '\'';
+
 IF: 'if';
-ELSE: 'else';
-FOR: 'for';
 WHILE: 'while';
-BREAK: 'break';
-CONST: 'const';
-NEWLINE: [\r\n]+ ;
-INT: 'Int';
-DOUBLE: 'Double';
-FLOAT: 'Float';
-CHAR: 'Char';
-STRING: 'String';
-BOOLEAN: 'Boolean';
+
 PRINT: 'print';
 SCAN: 'scan';
-IDENTIFIER: ('a'..'z' | 'A'..'Z') ('0'..'9' | 'a'..'z' | 'A'..'Z')*;
-INTLITERAL: ('-'? ('1'..'9')('0'..'9')*) | '0';
-DOUBLELITERAL:  ('0'..'9')+ '.' ('0'..'9')+ ;
-UNTERMINATEDSTRINGLITERAL : '"' (~["\\\r\n] | '\\' (. | EOF))*;
-STRINGLITERAL: UNTERMINATEDSTRINGLITERAL '"';
-CHARLITERAL: '"' (~["\\\r\n] | '\\' (. | EOF)) '"';
-BOOLEANLITERAL: 'true' | 'false';
-INTNUMBER: ('0'..'9');
 
-prog: (expr NEWLINE*)*;
+NUMBER: [0-9]+ '.' [0-9]+;
+VARIABLE: 'X' [0-9];
 
-expr: (
-      variable
-    | if_statement
-    | variable_assign
-    | print_call
-    | scan_call
-    | while_loop
-    | block
-    | NEWLINE);
+comparisson_type: EQ | NEQ | LE | LEQ | GE | GEQ;
 
-block: LCURL expr* RCURL;
-variable: variable_assign | variable_declaration;
-variable_declaration: (CONST)? typ IDENTIFIER (EQ literals)?;
-variable_assign: IDENTIFIER EQ literals;
+logic_operator: AND | OR;
 
-operators: MULTIPLY
-            | DIVIDE
-            | ADD
-            | SUBSTRACT;
+aritmetic_operator: ADD | SUB | MUL | DIV | MOD | POW | ROT;
 
-logic_operators: AND
-                | OR;
+trigonometric_operator: SIN | COS;
 
-numeric_literals: numeric_type operators numeric_type
-        | numeric_type;
+value: NUMBER | VARIABLE | num_expr;
 
-text_type: text_type  ADD text_type
-        | STRINGLITERAL
-        | CHARLITERAL
-        | IDENTIFIER;
+prog: (expr NEWLINE+)+;
 
-numeric_type:   INTLITERAL
-              | DOUBLELITERAL
-              | IDENTIFIER
-              | numeric_type operators numeric_type;
+expr:
+	if_statement
+	| while_loop
+	| block
+	| print_call
+	| scan_call
+	| assignment;
 
-literals:   BOOLEANLITERAL
-        | text_type
-        | numeric_literals
-        | IDENTIFIER
-        | scan_call;
+block: '{' expr+ '}';
 
-comparisson_type: EQEQ
-          | LE
-          | GE
-          | GTHAN
-          | LTHAN
-          | NOTEQ;
+// ----- IF -----
+if_statement: IF '(' if_condition ')' block;
 
-typ:  INT
-    | DOUBLE
-    | STRING
-    | CHAR
-    | IDENTIFIER
-    | BOOLEAN;
+if_condition:
+	value comparisson_type value
+	| if_condition logic_operator if_condition;
 
-if_statement: IF LPAREN if_condition RPAREN LCURL NEWLINE*
-                expr*
-                RCURL NEWLINE*  (ELSE if_statement | ELSE LCURL NEWLINE* expr* RCURL NEWLINE*)?;
+// ----- WHILE -----
+while_loop: WHILE '(' if_condition ')' block;
 
-if_condition: literals comparisson_type literals
-        | if_condition logic_operators if_condition;
+// ----- ASSIGNMENT -----
+assignment: VARIABLE '=' value;
 
-while_loop: WHILE LPAREN while_condition RPAREN LCURL NEWLINE*
-            expr*
-            RCURL;
+// ----- NUMBER EXPRESSION -----
+num_expr:
+	'(' expr aritmetic_operator expr ')'
+	| trigonometric_operator '(' expr ')'
+	| NUMBER
+	| VARIABLE;
 
-while_condition: (literals comparisson_type literals);
+// ----- PRINT -----
+print_call: PRINT '(' num_expr ')';
 
-print_call: PRINT LPAREN (text_type)? RPAREN NEWLINE*;
-
-scan_call: SCAN LPAREN (IDENTIFIER)? RPAREN NEWLINE*;
+// ----- SCAN -----
+scan_call: SCAN '(' VARIABLE ')';
