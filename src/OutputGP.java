@@ -20,7 +20,6 @@ public class OutputGP {
                 "\nGENERATIONS="+ TinyGP.GENERATIONS +
                 "\nT_SIZE="+ TinyGP.T_SIZE +
                 "\n----------------------------------\n");
-        writer_stats.write("\n----------------------------------\n");
     }
 
     /**
