@@ -1,0 +1,1 @@
+# Gramatyka stworzona za pomocą narzędzia ANTLR4.
