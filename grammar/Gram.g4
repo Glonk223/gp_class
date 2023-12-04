@@ -50,8 +50,9 @@ trigonometric_operator: SIN | COS ;
 
 bool_value
 	: BOOL_VAR | TRUE | FALSE | NOT bool_value
-    | LPAREN bool_value     logic_operator     bool_value RPAREN
-    | LPAREN numeric_value comparisson_type numeric_value RPAREN
+    | numeric_value comparisson_type numeric_value
+    | bool_value     logic_operator     bool_value
+	| LPAREN bool_value RPAREN
     ;
 
 numeric_value
