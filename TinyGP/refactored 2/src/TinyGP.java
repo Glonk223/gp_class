@@ -60,6 +60,7 @@ public class TinyGP {
         TinyGP.consoleOut = consoleOut;
     }
 
+    
     //! ---------- PRINTING ----------
     public void printParameters() {
         var sb = new StringBuilder();
