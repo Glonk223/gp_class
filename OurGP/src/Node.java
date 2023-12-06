@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-enum Rules{
+enum Rules {
     PROGRAM,
     EXPR,
     IF,
@@ -19,7 +19,7 @@ enum Rules{
     NUMERIC_VALUE
 }
 
-abstract class Node{
+abstract class Node {
     Node parent;
     int depth;
     int max_depth = 30;
@@ -28,7 +28,7 @@ abstract class Node{
 class LeafNode extends Node {
     String token;
 
-    LeafNode(Node parr, String tok){
+    LeafNode(Node parr, String tok) {
         this.parent = parr;
         this.token = tok;
         this.depth = parent.depth+1;
