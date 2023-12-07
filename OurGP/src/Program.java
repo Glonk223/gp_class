@@ -1,5 +1,4 @@
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class Program {
     RuleNode root;
@@ -12,7 +11,7 @@ public class Program {
      * Default max depth is 5.
      */
     public Program() {
-        root = new RuleNode(null, Rules.PROGRAM);
+        root = new RuleNode(null, Rules.PROGRAM, 0);
         root.grow(5);
     }
     /**
@@ -21,7 +20,7 @@ public class Program {
      * @param max_depth max depth of this program
      */
     public Program(int max_depth) {
-        root = new RuleNode(null, Rules.PROGRAM);
+        root = new RuleNode(null, Rules.PROGRAM, 0);
         root.grow(max_depth);
     }
 
@@ -29,6 +28,35 @@ public class Program {
         root = (RuleNode) program.root.copy();
     }
 
+    public String toString() {
+        StringBuilder s = new StringBuilder();
+        Stack<Node> stack = new Stack<>();
+        Rules[] numValParRules = {Rules.PRINT, Rules.NUMERIC_VALUE};
+        Rules[] boolValParRules = {Rules.PRINT, Rules.BOOL_VALUE, Rules.WHILE, Rules.IF};
+
+        for(int i = root.children.size()-1; i >= 0; i--) {
+            stack.push(root.children.get(i));
+        }
+
+        while (!stack.empty()) {
+            Node n = stack.pop();
+            if ((n.rule == Rules.NUMERIC_VALUE && Arrays.asList(numValParRules).contains(n.parent.rule))
+                    || (n.rule == Rules.BOOL_VALUE && Arrays.asList(boolValParRules).contains(n.parent.rule))
+                    || (n.parent.rule == Rules.SCAN && !Objects.equals(n.toString(), "scan")))
+            {
+                s.append('(');
+                s.append(n);
+                s.append(')');
+            } else if (n.rule == Rules.BLOCK) {
+                s.append('{');
+                s.append(n);
+                s.append('}');
+            } else
+                s.append(n);
+        }
+
+        return s.toString();
+    }
 
     //! ---------- GENETIC OPERATORS ----------
     public Program crossover(Program parent1, Program parent2) {
@@ -55,5 +83,10 @@ public class Program {
         offspring.root.mutate();
 
         return offspring;
+    }
+
+    public static void main(String[] args) {
+        Program testProg = new Program(10);
+        System.out.print(testProg);
     }
 }
