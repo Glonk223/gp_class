@@ -1,9 +1,6 @@
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
-
-enum Rules {
+enum Rules{
     PROGRAM(null),
     EXPR(null),
     IF(EXPR),
@@ -32,11 +29,10 @@ enum Rules {
     }
 }
 
-abstract class Node {
+abstract class Node{
     Node parent;
     int depth;
     Rules rule;
-    static final int max_depth = 30;
     static final double mutation_probability = 0.05;
 
     Node copy() { return copy(null); }
@@ -52,13 +48,15 @@ abstract class Node {
         return this.rule.getDependency();
     }
 
+    abstract public String toString();
+    abstract  void grow(int max_depth);
     abstract void mutate();
 }
 
 class LeafNode extends Node {
     String token;
 
-    LeafNode(Node parr, String tok) {
+    LeafNode(Node parr, String tok){
         this.rule = null;
         this.parent = parr;
         this.token = tok;
@@ -73,6 +71,10 @@ class LeafNode extends Node {
     Node getNode(int index) { return null; }
     ArrayList<Node> getNodes(Rules rule, ArrayList<Node> nodes) {
         return nodes;
+    }
+
+    @Override
+    void grow(int max_depth) {
     }
 
     void mutate() {
@@ -99,26 +101,38 @@ class LeafNode extends Node {
                 break;
         }
     }
+
+    public String toString() {
+        return token;
+    }
 }
+
 
 class RuleNode extends Node {
     List<Node> children;
+    RuleNode(Node parr, Rules r, int depth) {
+        this.parent = parr;
+        this.rule = r;
+        this.depth = depth;
+        this.children = new ArrayList<>();
+    }
 
     RuleNode(Node parr, Rules r) {
         this.parent = parr;
         this.rule = r;
         this.depth = parent.depth+1;
+        this.children = new ArrayList<>();
     }
 
-    List<Node> generateExpressions() {
+    List<Node> generateExpressions(int max_depth) {
         List<Node> childs = new ArrayList<>();
         Random random = new Random();
-        int howManyChilds = random.nextInt(10+1)+1;
+        int howManyChilds = random.nextInt(4)+1;
         for(int i=0; i < howManyChilds; i++) {
             int expr = random.nextInt(6);
             Rules[] exprChildRules = {Rules.IF, Rules.WHILE, Rules.BLOCK, Rules.PRINT, Rules.SCAN, Rules.ASSIGN};
 
-            if (max_depth - this.depth > 2) {
+            if (max_depth - this.depth > 3) {
                 childs.add(new RuleNode(this, exprChildRules[expr]));
             }
             else {
@@ -132,70 +146,60 @@ class RuleNode extends Node {
 
     String boolVar() {
         Random random = new Random();
-        return "L" + String.valueOf(random.nextInt(10));
+        return "L" + random.nextInt(10);
     }
 
     String numVar() {
         Random random = new Random();
-        return "X" + String.valueOf(random.nextInt(100));
+        return "X" + random.nextInt(10);
     }
 
+    String number() {
+        Random random = new Random();
+        return Double.toString(random.nextDouble(100));
+    }
+
+    @Override
     void grow(int max_depth) {
         Random random = new Random();
         String[] compSymbols = {"==", "!=", "<", "<=", ">", ">="};
         String[] logicSymbols = {"&&", "||"};
         String[] arithSymbols = {"+", "-", "*", "/", "%"};
         String[] trigSymbols = {"sin", "cos"};
+        Stack<Integer> stack = new Stack<>();
 
         switch (this.rule) {
-            case Rules.PROGRAM:
+            case PROGRAM:
                 this.children.add(new RuleNode(this, Rules.EXPR));
                 break;
-            case Rules.EXPR:
-                this.children = generateExpressions();
+            case EXPR, BLOCK:
+                this.children = generateExpressions(max_depth);
                 break;
-            case Rules.IF:
+            case IF:
                 this.children.add(new LeafNode(this, "if"));
-                this.children.add(new LeafNode(this, "("));
                 this.children.add(new RuleNode(this, Rules.BOOL_VALUE));
-                this.children.add(new LeafNode(this, ")"));
-                this.children.add(new LeafNode(this, "\n"));
-                this.children.add(new LeafNode(this, "{"));
                 this.children.add(new RuleNode(this, Rules.BLOCK));
                 break;
-            case Rules.WHILE:
+            case WHILE:
                 this.children.add(new LeafNode(this, "while"));
-                this.children.add(new LeafNode(this, "("));
                 this.children.add(new RuleNode(this, Rules.BOOL_VALUE));
-                this.children.add(new LeafNode(this, ")"));
-                this.children.add(new LeafNode(this, "\n"));
-                this.children.add(new LeafNode(this, "{"));
                 this.children.add(new RuleNode(this, Rules.BLOCK));
                 break;
-            case Rules.BLOCK:
-                this.children.add(new LeafNode(this, "{"));
-                this.children.add(new RuleNode(this, Rules.EXPR));
-                this.children.add(new LeafNode(this, "}"));
-                break;
-            case Rules.PRINT:
+            case PRINT:
                 this.children.add(new LeafNode(this, "print"));
-                this.children.add(new LeafNode(this, "("));
                 if  (random.nextInt(2) == 0)
                     this.children.add(new RuleNode(this, Rules.NUMERIC_VALUE));
                 else
                     this.children.add(new RuleNode(this, Rules.BOOL_VALUE));
-                this.children.add(new LeafNode(this, ")"));
                 break;
-            case Rules.SCAN:
+            case SCAN:
                 this.children.add(new LeafNode(this, "scan"));
-                this.children.add(new LeafNode(this, "("));
                 if  (random.nextInt(2) == 0)
                     this.children.add(new LeafNode(this, numVar()));
                 else
                     this.children.add(new LeafNode(this, boolVar()));
-                this.children.add(new LeafNode(this, ")"));
                 break;
-            case Rules.ASSIGN:
+            case ASSIGN:
                 if  (random.nextInt(2) == 0) {
                     this.children.add(new LeafNode(this, numVar()));
                     this.children.add(new LeafNode(this, "="));
@@ -206,22 +210,87 @@ class RuleNode extends Node {
                     this.children.add(new LeafNode(this, "="));
                     this.children.add(new RuleNode(this, Rules.BOOL_VALUE));
                 }
-                this.children.add(new LeafNode(this, ";"));
                 break;
-            case Rules.COMPARISON:
+            case COMPARISON:
                 this.children.add(new LeafNode(this, compSymbols[random.nextInt(6)]));
                 break;
-            case Rules.LOGIC:
+            case LOGIC:
                 this.children.add(new LeafNode(this, logicSymbols[random.nextInt(2)]));
                 break;
-            case Rules.ARITHMETIC:
+            case ARITHMETIC:
                 this.children.add(new LeafNode(this, arithSymbols[random.nextInt(5)]));
                 break;
-            case Rules.TRIG:
+            case TRIG:
                 this.children.add(new LeafNode(this, trigSymbols[random.nextInt(2)]));
                 break;
+            case BOOL_VALUE:
+                if (random.nextBoolean() && max_depth - this.depth > 3) {
+                    int whichRule = random.nextInt(4);
+                    if (whichRule == 0) {
+                        this.children.add(new LeafNode(this, "!"));
+                        this.children.add(new RuleNode(this, Rules.BOOL_VALUE));
+                    }
+                    else if (whichRule == 1) {
+                        this.children.add(new RuleNode(this, Rules.NUMERIC_VALUE));
+                        this.children.add(new RuleNode(this, Rules.COMPARISON));
+                        this.children.add(new RuleNode(this, Rules.NUMERIC_VALUE));
+                    }
+                    else if (whichRule == 2) {
+                        this.children.add(new RuleNode(this, Rules.BOOL_VALUE));
+                        this.children.add(new RuleNode(this, Rules.LOGIC));
+                        this.children.add(new RuleNode(this, Rules.BOOL_VALUE));
+                    }
+                    else
+                        this.children.add(new RuleNode(this, Rules.BOOL_VALUE));
+                }
+                else {
+                    int whichTerm = random.nextInt(3);
+                    if (whichTerm == 0)
+                        this.children.add(new LeafNode(this, boolVar()));
+                    else if (whichTerm == 1)
+                        this.children.add(new LeafNode(this, "true"));
+                    else
+                        this.children.add(new LeafNode(this, "false"));
+                }
+                break;
+            case NUMERIC_VALUE:
+                if (random.nextBoolean() && max_depth - this.depth > 3) {
+                    int whichRule = random.nextInt(3);
+                    if (whichRule == 0) {
+                        this.children.add(new RuleNode(this, Rules.TRIG));
+                        this.children.add(new RuleNode(this, Rules.NUMERIC_VALUE));
+                    }
+                    else if (whichRule == 1) {
+                        this.children.add(new RuleNode(this, Rules.NUMERIC_VALUE));
+                    }
+                    else {
+                        this.children.add(new RuleNode(this, Rules.NUMERIC_VALUE));
+                        this.children.add(new LeafNode(this, arithSymbols[random.nextInt(5)]));
+                        this.children.add(new RuleNode(this, Rules.NUMERIC_VALUE));
+                    }
+                }
+                else {
+                    int whichTerm = random.nextInt(2);
+                    if (whichTerm == 0)
+                        this.children.add(new LeafNode(this, numVar()));
+                    else
+                        this.children.add(new LeafNode(this, number()));
+                }
+                break;
+        }
+
+        for(int i = this.children.size()-1; i >= 0; i--) {
+            if (this.children.get(i).rule != null) {
+                stack.push(i);
+            }
+        }
+
+        while (!stack.empty()) {
+            int index = stack.pop();
+            this.children.get(index).grow(max_depth);
         }
     }
+
 
     RuleNode copy(Node parent) {
         RuleNode copy = new RuleNode(parent, this.rule);
@@ -263,10 +332,40 @@ class RuleNode extends Node {
         return nodes;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder s = new StringBuilder();
+        Stack<Node> stack = new Stack<>();
+        Rules[] numValParRules = {Rules.PRINT, Rules.NUMERIC_VALUE};
+        Rules[] boolValParRules = {Rules.PRINT, Rules.BOOL_VALUE, Rules.WHILE, Rules.IF};
+
+
+        for (int i = this.children.size()-1; i >= 0; i--) {
+            stack.push(this.children.get(i));
+        }
+
+        while (!stack.empty()) {
+            Node n = stack.pop();
+            if ((n.rule == Rules.NUMERIC_VALUE && Arrays.asList(numValParRules).contains(n.parent.rule))
+                    || (n.rule == Rules.BOOL_VALUE && Arrays.asList(boolValParRules).contains(n.parent.rule))
+                    || (n.parent.rule == Rules.SCAN && !Objects.equals(n.toString(), "scan")))
+            {
+                s.append('(');
+                s.append(n);
+                s.append(')');
+            } else if (n.rule == Rules.BLOCK) {
+                s.append('{');
+                s.append(n);
+                s.append('}');
+            } else
+                s.append(n);
+        }
+
+        return s.toString();
+    }
+
     void mutate() {
         for (Node child : this.children)
             child.mutate();
     }
-
-
 }
