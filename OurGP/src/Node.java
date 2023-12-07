@@ -49,7 +49,7 @@ abstract class Node {
         return this.rule.getDependency();
     }
 
-    abstract public String toString();
+    abstract public String toString(int tabCounter);
     abstract void grow(int max_depth);
     abstract void mutate();
 }
@@ -105,7 +105,7 @@ class LeafNode extends Node {
         // System.out.println(this.token);
     }
 
-    public String toString() {
+    public String toString(int tabCounter) {
         return token;
     }
 }
@@ -338,12 +338,10 @@ class RuleNode extends Node {
     }
 
     @Override
-    public String toString() {
+    public String toString(int tabCounter) {
         StringBuilder s = new StringBuilder();
         Stack<Node> stack = new Stack<>();
-        Rules[] numValParRules = {Rules.PRINT, Rules.NUMERIC_VALUE};
-        Rules[] boolValParRules = {Rules.PRINT, Rules.BOOL_VALUE, Rules.WHILE, Rules.IF};
-
+        Rules[] boolValParRules = {Rules.PRINT, Rules.WHILE, Rules.IF};
 
         for (int i = this.children.size()-1; i >= 0; i--) {
             stack.push(this.children.get(i));
@@ -351,19 +349,24 @@ class RuleNode extends Node {
 
         while (!stack.empty()) {
             Node n = stack.pop();
-            if ((n.rule == Rules.NUMERIC_VALUE && Arrays.asList(numValParRules).contains(n.parent.rule))
+            if ((n.rule == Rules.NUMERIC_VALUE && n.parent.rule == Rules.PRINT)
                     || (n.rule == Rules.BOOL_VALUE && Arrays.asList(boolValParRules).contains(n.parent.rule))
-                    || (n.parent.rule == Rules.SCAN && !Objects.equals(n.toString(), "scan")))
+                    || (n.parent.rule == Rules.SCAN && !Objects.equals(n.toString(tabCounter).trim(), "scan")))
             {
                 s.append('(');
-                s.append(n);
-                s.append(')');
+                s.append(n.toString(tabCounter));
+                s.append(")\n");
             } else if (n.rule == Rules.BLOCK) {
-                s.append('{');
-                s.append(n);
-                s.append('}');
-            } else
-                s.append(n);
+                s.append("\t".repeat(tabCounter)).append("{\n");
+                s.append(n.toString(tabCounter+1));
+                s.append("\t".repeat(tabCounter)).append("}\n");
+            } else if (n.rule == Rules.ASSIGN) {
+                s.append("\t".repeat(tabCounter)).append(n.toString(tabCounter)).append("\n");
+            } else if (n.parent.rule == Rules.BLOCK) {
+                s.append("\t".repeat(tabCounter)).append(n.toString(tabCounter));
+            }
+            else
+                s.append(n.toString(tabCounter));
         }
 
         return s.toString();

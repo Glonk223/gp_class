@@ -28,11 +28,10 @@ public class Program {
         root = (RuleNode) program.root.copy();
     }
 
-    public String toString() {
+    public String toString(int tabCounter) {
         StringBuilder s = new StringBuilder();
         Stack<Node> stack = new Stack<>();
-        Rules[] numValParRules = {Rules.PRINT, Rules.NUMERIC_VALUE};
-        Rules[] boolValParRules = {Rules.PRINT, Rules.BOOL_VALUE, Rules.WHILE, Rules.IF};
+        Rules[] boolValParRules = {Rules.PRINT, Rules.WHILE, Rules.IF};
 
         for(int i = root.children.size()-1; i >= 0; i--) {
             stack.push(root.children.get(i));
@@ -40,19 +39,24 @@ public class Program {
 
         while (!stack.empty()) {
             Node n = stack.pop();
-            if ((n.rule == Rules.NUMERIC_VALUE && Arrays.asList(numValParRules).contains(n.parent.rule))
+            if ((n.rule == Rules.NUMERIC_VALUE && n.parent.rule == Rules.PRINT)
                     || (n.rule == Rules.BOOL_VALUE && Arrays.asList(boolValParRules).contains(n.parent.rule))
-                    || (n.parent.rule == Rules.SCAN && !Objects.equals(n.toString(), "scan")))
+                    || (n.parent.rule == Rules.SCAN && !Objects.equals(n.toString(tabCounter).trim(), "scan")))
             {
                 s.append('(');
-                s.append(n);
-                s.append(')');
+                s.append(n.toString(tabCounter));
+                s.append(")\n");
             } else if (n.rule == Rules.BLOCK) {
-                s.append('{');
-                s.append(n);
-                s.append('}');
-            } else
-                s.append(n);
+                s.append("\t".repeat(tabCounter)).append("{\n");
+                s.append(n.toString(tabCounter+1));
+                s.append("\t".repeat(tabCounter)).append("}\n");
+            } else if (n.rule == Rules.ASSIGN) {
+                s.append("\t".repeat(tabCounter)).append(n.toString(tabCounter)).append("\n");
+            } else if (n.parent.rule == Rules.BLOCK) {
+                s.append("\t".repeat(tabCounter)).append(n.toString(tabCounter));
+            }
+            else
+                s.append(n.toString(tabCounter));
         }
 
         return s.toString();
@@ -106,15 +110,15 @@ public class Program {
     }
 
     public static void main(String[] args) {
-        Program p1 = new Program(5);
-        Program p2 = new Program(5);
-        System.out.println(p1);
-        System.out.println(p2);
-
-        Program p3 = p1.crossover(p1, p2);
-        System.out.println(p3);
-
-        Program p4 = p3.mutation(p1);
-        System.out.println(p4);
+        Program p1 = new Program(7);
+//        Program p2 = new Program(5);
+        System.out.println(p1.toString(0));
+//        System.out.println(p2);
+//
+//        Program p3 = p1.crossover(p1, p2);
+//        System.out.println(p3);
+//
+//        Program p4 = p3.mutation(p1);
+//        System.out.println(p4);
     }
 }
