@@ -29,7 +29,8 @@ enum Rules{
     }
 }
 
-abstract class Node{
+abstract class Node {
+    List<Node> children;
     Node parent;
     int depth;
     Rules rule;
@@ -49,7 +50,7 @@ abstract class Node{
     }
 
     abstract public String toString();
-    abstract  void grow(int max_depth);
+    abstract void grow(int max_depth);
     abstract void mutate();
 }
 
@@ -78,14 +79,15 @@ class LeafNode extends Node {
     }
 
     void mutate() {
-        if (Math.random() > mutation_probability) return;
-
         Random random = new Random();
+        if (random.nextDouble() > mutation_probability) return;
+
         String[] compSymbols = {"==", "!=", "<", "<=", ">", ">="};
         String[] logicSymbols = {"&&", "||"};
         String[] arithSymbols = {"+", "-", "*", "/", "%"};
         String[] trigSymbols = {"sin", "cos"};
 
+        // System.out.print("mutate leaf: " + this.token + " -> ");
         switch (token) {
             case "==", "!=", "<", "<=", ">", ">=":
                 this.token = compSymbols[random.nextInt(6)];
@@ -100,6 +102,7 @@ class LeafNode extends Node {
                 this.token = trigSymbols[random.nextInt(2)];
                 break;
         }
+        // System.out.println(this.token);
     }
 
     public String toString() {
@@ -109,7 +112,6 @@ class LeafNode extends Node {
 
 
 class RuleNode extends Node {
-    List<Node> children;
     RuleNode(Node parr, Rules r, int depth) {
         this.parent = parr;
         this.rule = r;
@@ -120,8 +122,11 @@ class RuleNode extends Node {
     RuleNode(Node parr, Rules r) {
         this.parent = parr;
         this.rule = r;
-        this.depth = parent.depth+1;
         this.children = new ArrayList<>();
+        if (parr == null)
+            this.depth = 0;
+        else
+            this.depth = parent.depth+1;
     }
 
     List<Node> generateExpressions(int max_depth) {

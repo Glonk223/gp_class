@@ -62,18 +62,23 @@ public class Program {
     public Program crossover(Program parent1, Program parent2) {
         Program offspring = new Program(parent1);
         
-        Node crossoverNode1 = offspring.root.getNode(rd.nextInt(offspring.root.length()));
+        Node crossoverNode1 = offspring.root.getNode(rd.nextInt(offspring.root.length()-1)+1);
+        // System.out.println("\tcrossover node1: " + crossoverNode1);
         if (crossoverNode1 == null)
             return offspring;
         
         List<Node> potentialCrossoverNodes = parent2.root.getNodes(crossoverNode1.rule.getDependency());
+        // System.out.println("\tpotential crossover nodes: ");
+        // for (var potentialCrossoverNode : potentialCrossoverNodes)
+        //     System.out.println("\t\t" + potentialCrossoverNode);
 
         if (potentialCrossoverNodes.size() == 0)
             return offspring;
         
         Node crossoverNode2 = potentialCrossoverNodes.get(rd.nextInt(potentialCrossoverNodes.size()));
+        // System.out.println("\tcrossover node2: " + crossoverNode2);
 
-        crossoverNode1 = crossoverNode2.copy(crossoverNode1.parent);
+        swapSubTrees(crossoverNode1, crossoverNode2);
 
         return offspring;
     }
@@ -85,8 +90,31 @@ public class Program {
         return offspring;
     }
 
+    //! ---------- HELPER METHODS ----------
+    private void swapSubTrees(Node node1, Node node2) {
+        Node parent1 = node1.parent;
+        Node parent2 = node2.parent;
+
+        int index1 = parent1.children.indexOf(node1);
+        int index2 = parent2.children.indexOf(node2);
+
+        parent1.children.set(index1, node2);
+        parent2.children.set(index2, node1);
+
+        node1.parent = parent2;
+        node2.parent = parent1;
+    }
+
     public static void main(String[] args) {
-        Program testProg = new Program(10);
-        System.out.print(testProg);
+        Program p1 = new Program(5);
+        Program p2 = new Program(5);
+        System.out.println(p1);
+        System.out.println(p2);
+
+        Program p3 = p1.crossover(p1, p2);
+        System.out.println(p3);
+
+        Program p4 = p3.mutation(p1);
+        System.out.println(p4);
     }
 }
