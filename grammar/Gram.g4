@@ -3,15 +3,16 @@ grammar Gram;
 options { tokenVocab=Lexer; }
 
 
-program: expr+;
+program: expressions;
 
-expr
-    : if_statement
-    | while_loop
-    | block
-    | print_call
-    | scan_call
-    | assignment
+
+//! ----- EXPRESSIONS -----
+expressions
+    :   ( if_statement
+        | while_loop
+        | print_call
+        | scan_call
+        | assignment) (expressions | )
     ;
 
 //! ----- IF_STATEMENT -----
@@ -21,31 +22,31 @@ if_statement: IF LPAREN bool_value RPAREN block;
 while_loop  : WHILE LPAREN bool_value RPAREN block;
 
 //! ----- BLOCK -----
-block: LBRACE expr* RBRACE;
+block: LBRACE expressions RBRACE;
 
 //! ----- PRINT_CALL -----
 print_call
-    : PRINT LPAREN numeric_value RPAREN SEMICOLON
-    | PRINT LPAREN  bool_value   RPAREN SEMICOLON
+    : PRINT LPAREN numeric_value RPAREN
+    | PRINT LPAREN  bool_value   RPAREN
     ;
 
 //! ----- SCAN_CALL -----
 scan_call
-    : SCAN LPAREN NUM_VAR  RPAREN SEMICOLON
-    | SCAN LPAREN BOOL_VAR RPAREN SEMICOLON
+    : SCAN LPAREN NUM_VAR  RPAREN
+    | SCAN LPAREN BOOL_VAR RPAREN
     ;
 
 //! ----- ASSIGNMENT -----
 assignment
-    : NUM_VAR  ASS numeric_value SEMICOLON
-    | BOOL_VAR ASS bool_value SEMICOLON
+    : NUM_VAR  ASS numeric_value
+    | BOOL_VAR ASS bool_value
     ;
 
 //! ----- MATH & LOGIC -----
-comparisson_type      : EQ  | NEQ | LE  | LEQ | GE  | GEQ;
-logic_operator        : AND | OR  ;
-aritmetic_operator    : ADD | SUB | MUL | DIV | MOD ;
-trigonometric_operator: SIN | COS ;
+comparisson_type            : EQ  | NEQ | LE  | LEQ | GE  | GEQ;
+logic_operator              : AND | OR  ;
+aritmetic_operator_strong   : MUL | DIV | MOD ;
+aritmetic_operator_weak     : ADD | SUB ;
 
 bool_value
     : BOOL_VAR | TRUE | FALSE | NOT bool_value
@@ -55,9 +56,8 @@ bool_value
     ;
 
 numeric_value
-    : NUMBER | NUM_VAR
-    | numeric_value (MUL | DIV | MOD) numeric_value
-    | numeric_value    (ADD | SUB)    numeric_value
-    | trigonometric_operator LPAREN numeric_value RPAREN
+    : NUMBER | NUM_VAR | SUB numeric_value
+    | numeric_value aritmetic_operator_strong numeric_value
+    | numeric_value  aritmetic_operator_weak  numeric_value
     | LPAREN numeric_value RPAREN
     ;

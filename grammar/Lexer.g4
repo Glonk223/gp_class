@@ -1,23 +1,18 @@
 lexer grammar Lexer;
 
 
-WS: [ \t\r]+ -> skip;
-NEWLINE: '\n';
+WS: [ \t\r\n]+ -> skip;
 
 LPAREN: '(';
 RPAREN: ')';
 LBRACE: '{';
 RBRACE: '}';
-SEMICOLON: ';';
 
 ADD: '+';
 SUB: '-';
 MUL: '*';
 DIV: '/';
 MOD: '%';
-
-SIN: 'sin';
-COS: 'cos';
 
 ASS: '=';
 
@@ -32,8 +27,8 @@ AND: '&&';
 OR: '||';
 NOT: '!';
 
-TRUE: 'true';
-FALSE: 'false';
+TRUE: 'True';
+FALSE: 'False';
 
 IF: 'if';
 WHILE: 'while';
