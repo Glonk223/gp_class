@@ -16,13 +16,10 @@ expressions
     ;
 
 //! ----- IF_STATEMENT -----
-if_statement: IF LPAREN bool_value RPAREN block;
+if_statement: IF LPAREN bool_value RPAREN LBRACE expressions RBRACE;
 
 //! ----- WHILE_LOOP -----
-while_loop  : WHILE LPAREN bool_value RPAREN block;
-
-//! ----- BLOCK -----
-block: LBRACE expressions RBRACE;
+while_loop  : WHILE LPAREN bool_value RPAREN LBRACE expressions RBRACE;
 
 //! ----- PRINT_CALL -----
 print_call
