@@ -17,37 +17,49 @@ namespace OurGP.Nodes.Values.NumericValues
                 _variables[i] = 0;
         }
 
-        // TODO: Copy constructor
-        // public NumericVariable(NumericVariable numericVariable)
-
+        //* Depth constructor
+        public NumericVariable(int depth, Node? parent)
+            : base(0, depth, parent) { }
+        
         //* Parameterized constructor
         public NumericVariable(int index)
+            : base(0)
         {
             _index = index;
         }
 
         //* Grow constructor
-        public NumericVariable(int currentDepth, int maxDepth, Node? parent)
-            : base(currentDepth, parent)
+        public static new NumericVariable Grow(int maxDepth, int currentDepth = 0, Node? parent = null)
         {
             // Console.WriteLine($"NumericVariable.Grow({currentDepth}, {maxDepth})");
             if (maxDepth - currentDepth < minDepth)
-                throw new System.ArgumentException(GrowErrorMessage(currentDepth, maxDepth));
+                throw new System.ArgumentException(GrowErrorMessage(maxDepth, currentDepth));
 
-            _index = rd.Next(_size);
+            return new NumericVariable(currentDepth, parent)
+            {
+                _index = GP.rd.Next(_size)
+            };
         }
-
-        static string GrowErrorMessage(int currentDepth, int maxDepth)
+        static string GrowErrorMessage(int maxDepth, int currentDepth)
         {
             return $"From node NumericVariable on depth={currentDepth}:\n\tCannot grow NumericVariable Node of depth={maxDepth - currentDepth},\n\tMinimum depth is {minDepth}";
         }
 
+        //* Copy constructor
+        public static NumericVariable DeepCopy(NumericVariable other)
+        {
+            return new NumericVariable(other._index);
+        }
 
-        //! ---------- EVALUATION ----------
+
+        //! ---------- PROPERTIES ----------
         public override double Value => _variables[_index];
 
+        public override int MinDepth => 1;
+        public override int MaxDepth => 1;
 
-        //! ---------- VARIABLE INTERFACE ----------
+
+        //! ---------- METHODS ----------
         public void Assign(Value value)
         {
             if (value is NumericValue numericValue)
@@ -56,8 +68,6 @@ namespace OurGP.Nodes.Values.NumericValues
                 throw new System.Exception("Cannot assign a non-numeric value to a numeric variable.");
         }
 
-
-        //! ---------- TO STRING ----------
         public override string ToString()
         {
             return $"X{_index}";

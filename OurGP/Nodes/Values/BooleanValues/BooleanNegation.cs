@@ -3,44 +3,59 @@ namespace OurGP.Nodes.Values.BooleanValues
     public class BooleanNegation : BooleanValue
     {
         internal static new readonly int minDepth = 2;
-        private BooleanValue _value;
+        private BooleanValue BValue
+        {
+            get => (BooleanValue)_children[0];
+            set => _children[0] = value;
+        }
 
 
         //! ---------- CONSTRUCTORS ----------
-        // TODO: Copy constructor
-        // public ArithmeticOperation(ArithmeticOperation arithmeticOperation)
+        //* Depth constructor
+        public BooleanNegation(int depth, Node? parent)
+            : base(1, depth, parent) { }
 
         //* Parameterized constructor
-        public BooleanNegation(BooleanValue value)
+        public BooleanNegation(BooleanValue bValue)
+            : base(1)
         {
-            _value = value;
+            BValue = bValue;
         }
 
         //* Grow constructor
-        public BooleanNegation(int currentDepth, int maxDepth, Node? parent)
-            : base(currentDepth, parent)
+        public static new BooleanNegation Grow(int maxDepth, int currentDepth = 0, Node? parent = null)
         {
             // Console.WriteLine($"ArithmeticOperation.Grow({currentDepth}, {maxDepth})");
             if (maxDepth - currentDepth < minDepth)
-                throw new System.ArgumentException(GrowErrorMessage(currentDepth, maxDepth));
-
-            _value = BooleanValue.Random(currentDepth + 1, maxDepth, this);
+                throw new System.ArgumentException(GrowErrorMessage(maxDepth, currentDepth));
+            
+            var node = new BooleanNegation(currentDepth, parent);
+            node.BValue = BooleanValue.Grow(maxDepth, currentDepth + 1, node);
+            return node;
         }
-
-        static string GrowErrorMessage(int currentDepth, int maxDepth)
+        static string GrowErrorMessage(int maxDepth, int currentDepth)
         {
             return $"From node NumericNegation on depth={currentDepth}:\n\tCannot grow NumericNegation Node of depth={maxDepth - currentDepth},\n\tMinimum depth is {minDepth}";
         }
 
+        //* Copy constructor
+        public static BooleanNegation DeepCopy(BooleanNegation other)
+        {
+            return new BooleanNegation(BooleanValues.BooleanValue.DeepCopy(other.BValue));
+        }
 
-        //! ---------- EVALUATION ----------
-        public override bool Value => !_value.Value;
+
+        //! ---------- PROPERTIES ----------
+        public override bool Value => !BValue.Value;
+
+        public override int MinDepth => BValue.MinDepth + 1;
+        public override int MaxDepth => BValue.MaxDepth + 1;
 
 
-        //! ---------- TO STRING ----------
+        //! ---------- METHODS ----------
         public override string ToString()
         {
-            return $"!({_value})";
+            return $"!({BValue})";
         }
     }
 }

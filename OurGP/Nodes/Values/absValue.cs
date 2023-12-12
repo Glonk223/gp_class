@@ -12,39 +12,50 @@ namespace OurGP.Nodes.Values
 
         internal static new readonly int minDepth = possibleTransformations.Values.Min();
 
+
         //! ---------- CONSTRUCTORS ----------
         //* Depth constructor
-        protected Value(int depth = 0, Node? parent = null)
-            : base(depth, parent) { }
+        protected Value(int childrenCount, int depth = 0, Node? parent = null)
+            : base(childrenCount, depth, parent) { }
 
         //* Grow constructor
-        public static new Value Random(int currentDepth, int maxDepth, Node? parent)
+        public static new Value Grow(int maxDepth, int currentDepth = 0, Node? parent = null)
         {
             // Console.WriteLine($"Value.Grow({currentDepth}, {maxDepth})");
             if (maxDepth - currentDepth < minDepth)
-                throw new System.ArgumentException(GrowErrorMessage(currentDepth, maxDepth));
+                throw new System.ArgumentException(GrowErrorMessage(maxDepth, currentDepth));
             
             return GetTransformationType(maxDepth - currentDepth) switch
             {
-                "BooleanValue" => BooleanValue.Random(currentDepth, maxDepth, parent),
-                "NumericValue" => NumericValue.Random(currentDepth, maxDepth, parent),
-                _ => throw new System.ArgumentException(GrowErrorMessage(currentDepth, maxDepth))
+                "BooleanValue" => BooleanValue.Grow(maxDepth, currentDepth, parent),
+                "NumericValue" => NumericValue.Grow(maxDepth, currentDepth, parent),
+                _ => throw new System.ArgumentException(GrowErrorMessage(maxDepth, currentDepth))
             };
         }
-
         static string GetTransformationType(int requiredDepth)
         {
             var possibleTransformationsFiltered = possibleTransformations.Where(x => x.Value <= requiredDepth).ToDictionary(x => x.Key, x => x.Value).Keys.ToList();
-            return possibleTransformationsFiltered[rd.Next(possibleTransformationsFiltered.Count)];
+            return possibleTransformationsFiltered[GP.rd.Next(possibleTransformationsFiltered.Count)];
         }
-
-        static string GrowErrorMessage(int currentDepth, int maxDepth)
+        static string GrowErrorMessage(int maxDepth, int currentDepth)
         {
             return $"From node Value on depth={currentDepth}:\n\tCannot grow NumericValue Node of depth={maxDepth - currentDepth},\n\tMinimum depth is {minDepth}";
         }
 
+        //* Copy constructor
+        public static Value DeepCopy(Value other)
+        {
+            return other switch
+            {
+                BooleanValue => BooleanValue.DeepCopy((BooleanValue)other),
+                NumericValue => NumericValue.DeepCopy((NumericValue)other),
+                _ => throw new System.ArgumentException($"Cannot copy Value of type {other.GetType()}")
+            };
+        }
 
-        //! ---------- TO STRING ----------
+
+        //! ---------- METHODS ----------
+        public override void Run() { }
         public override string ToString(string indent = "")
         {
             return ToString(indent: "");

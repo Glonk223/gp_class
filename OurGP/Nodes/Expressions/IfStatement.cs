@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using OurGP.Nodes.Values.BooleanValues;
 
 namespace OurGP.Nodes.Expressions
@@ -5,53 +6,73 @@ namespace OurGP.Nodes.Expressions
     public class IfStatement : Expression
     {
         internal static new readonly int minDepth = 4;
-        private BooleanValue _condition;
-        private ExpressionList _expressions;
+        private BooleanValue Condition
+        {
+            get => (BooleanValue)_children[0];
+            set => _children[0] = value;
+        }
+        private ExpressionList Expressions
+        {
+            get => (ExpressionList)_children[1];
+            set => _children[1] = value;
+        }
 
 
         //! ---------- CONSTRUCTORS ----------
-        // TODO: Copy constructor
-        // public IfStatement(IfStatement ifStatement)
+        //* Depth constructor
+        public IfStatement(int depth, Node? parent)
+            : base(2, depth, parent) { }
 
         //* Parameterized constructor
         public IfStatement(BooleanValue condition, ExpressionList expressions)
+            : base(2)
         {
-            _condition = condition;
-            _expressions = expressions;
+            Condition = condition;
+            Expressions = expressions;
         }
 
         //* Grow constructor
-        public IfStatement(int currentDepth, int maxDepth, Node? parent)
-            : base(currentDepth, parent)
+        public static new IfStatement Grow(int maxDepth, int currentDepth = 0, Node? parent = null)
         {
             // Console.WriteLine($"IfStatement.Grow({currentDepth}, {maxDepth})");
             if (maxDepth - currentDepth < minDepth)
-                throw new System.ArgumentException(GrowErrorMessage(currentDepth, maxDepth));
+                throw new System.ArgumentException(GrowErrorMessage(maxDepth, currentDepth));
 
-            _condition = BooleanValue.Random(currentDepth + 1, maxDepth, this);
-            _expressions = new ExpressionList(currentDepth + 1, maxDepth, this);
+            var node = new IfStatement(currentDepth, parent);
+            node.Condition = BooleanValue.Grow(maxDepth, currentDepth + 1, node);
+            node.Expressions = ExpressionList.Grow(maxDepth, currentDepth + 1, node);
+            return node;
         }
-
-        static string GrowErrorMessage(int currentDepth, int maxDepth)
+        static string GrowErrorMessage(int maxDepth, int currentDepth)
         {
             return $"From node IfStatement on depth={currentDepth}:\n\tCannot grow IfStatement Node of depth={maxDepth - currentDepth},\n\tMinimum depth is {minDepth}";
         }
 
-
-        //! ---------- RUN ----------
-        public override void Run()
+        //* Copy constructor
+        public static IfStatement DeepCopy(IfStatement other)
         {
-            if (_condition.Value)
-            {
-                _expressions.Run();
-            }
+            return new IfStatement(BooleanValue.DeepCopy(other.Condition),
+                                 ExpressionList.DeepCopy(other.Expressions));
         }
 
 
-        //! ---------- TO STRING ----------
+        //! ---------- PROPERTIES ----------
+        public override int MinDepth => Math.Min(Condition.MinDepth, Expressions.MinDepth) + 1;
+        public override int MaxDepth => Math.Max(Condition.MaxDepth, Expressions.MaxDepth) + 1;
+
+
+        //! ---------- METHODS ----------
+        public override void Run()
+        {
+            if (Condition.Value)
+            {
+                Expressions.Run();
+            }
+        }
+
         public override string ToString(string indent = "")
         {
-            return $"{indent}if ({_condition}) {{\n{_expressions.ToString(indent + "  ")}{indent}}}";
+            return $"{indent}if ({Condition}) {{\n{Expressions.ToString(indent + "  ")}{indent}}}";
         }
     }
 }

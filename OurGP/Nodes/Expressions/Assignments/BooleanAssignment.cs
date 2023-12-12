@@ -1,4 +1,3 @@
-using System.ComponentModel;
 using OurGP.Nodes.Values.BooleanValues;
 
 namespace OurGP.Nodes.Expressions.Assignments
@@ -6,50 +5,69 @@ namespace OurGP.Nodes.Expressions.Assignments
     public class BooleanAssignment : Assignment
     {
         internal static new readonly int minDepth = 2;
-        private BooleanVariable _variable;
-        private BooleanValue _value;
+        private BooleanVariable Variable
+        {
+            get => (BooleanVariable)_children[0];
+            set => _children[0] = value;
+        }
+        private BooleanValue Value
+        {
+            get => (BooleanValue)_children[1];
+            set => _children[1] = value;
+        }
 
 
         //! ---------- CONSTRUCTORS ----------
-        // TODO: Copy constructor
-        // public BooleanAssignment(BooleanAssignment assignment)
+        //* Depth constructor
+        public BooleanAssignment(int depth, Node? parent)
+            : base(depth, parent) { }
 
         //* Parameterized constructor
         public BooleanAssignment(BooleanVariable variable, BooleanValue value)
         {
-            _variable = variable;
-            _value = value;
+            Variable = variable;
+            Value = value;
         }
 
         //* Grow constructor
-        public BooleanAssignment(int currentDepth, int maxDepth, Node? parent)
-            : base(currentDepth, parent)
+        public static new BooleanAssignment Grow(int maxDepth, int currentDepth = 0, Node? parent = null)
         {
             // Console.WriteLine($"BooleanAssignment: {currentDepth} {maxDepth}");
             if (maxDepth - currentDepth < minDepth)
-                throw new System.ArgumentException(GrowErrorMessage(currentDepth, maxDepth));
+                throw new System.ArgumentException(GrowErrorMessage(maxDepth, currentDepth));
 
-            _variable = new BooleanVariable(currentDepth + 1, maxDepth, this);
-            _value = BooleanValue.Random(currentDepth + 1, maxDepth, this);
+            var node = new BooleanAssignment(currentDepth, parent);
+            node.Variable = BooleanVariable.Grow(maxDepth, currentDepth + 1, node);
+            node.Value = BooleanValue.Grow(maxDepth, currentDepth + 1, node);
+            return node;
         }
-
-        static string GrowErrorMessage(int currentDepth, int maxDepth)
+        static string GrowErrorMessage(int maxDepth, int currentDepth)
         {
             return $"From node BooleanAssignment on depth={currentDepth}:\n\tCannot grow BooleanAssignment Node of depth={maxDepth - currentDepth},\n\tMinimum depth is {minDepth}";
         }
 
-
-        //! ---------- RUN ----------
-        public override void Run()
+        //* Copy constructor
+        public static BooleanAssignment DeepCopy(BooleanAssignment other)
         {
-            _variable.Assign(_value);
+            return new BooleanAssignment(BooleanVariable.DeepCopy(other.Variable),
+                                            BooleanValue.DeepCopy(other.Value));
         }
 
 
-        //! ---------- TO STRING ----------
+        //! ---------- PROPERTIES ----------
+        public override int MinDepth => Math.Min(Variable.MinDepth, Value.MinDepth) + 1;
+        public override int MaxDepth => Math.Max(Variable.MaxDepth, Value.MaxDepth) + 1;
+
+
+        //! ---------- METHODS ----------
+        public override void Run()
+        {
+            Variable.Assign(Value);
+        }
+
         public override string ToString(string indent = "")
         {
-            return $"{indent}{_variable} = {_value}";
+            return $"{indent}{Variable} = {Value}";
         }
     }
 }

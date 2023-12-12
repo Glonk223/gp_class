@@ -13,31 +13,40 @@ namespace OurGP.Nodes.Expressions.Assignments
         //! ---------- CONSTRUCTORS ----------
         //* Depth constructor
         protected Assignment(int depth = 0, Node? parent = null)
-            : base(depth, parent) { }
+            : base(2, depth, parent) { }
 
         //* Grow constructor
-        public static new Assignment Random(int currentDepth, int maxDepth, Node? parent)
+        public static new Assignment Grow(int maxDepth, int currentDepth = 0, Node? parent = null)
         {
             // Console.WriteLine($"Assignment.Grow({currentDepth}, {maxDepth})");
             if (maxDepth - currentDepth < minDepth)
-                throw new System.ArgumentException(GrowErrorMessage(currentDepth, maxDepth));
+                throw new System.ArgumentException(GrowErrorMessage(maxDepth, currentDepth));
 
             return GetTransformationType(maxDepth - currentDepth) switch
             {
-                "BooleanAssignment" => new BooleanAssignment(currentDepth, maxDepth, parent),
-                "NumericAssignment" => new NumericAssignment(currentDepth, maxDepth, parent),
-                _ => throw new System.ArgumentException(GrowErrorMessage(currentDepth, maxDepth))
+                "BooleanAssignment" => BooleanAssignment.Grow(maxDepth, currentDepth, parent),
+                "NumericAssignment" => NumericAssignment.Grow(maxDepth, currentDepth, parent),
+                _ => throw new System.ArgumentException(GrowErrorMessage(maxDepth, currentDepth))
             };
         }
-
         static string GetTransformationType(int requiredDepth)
         {
-            return possibleTransformations.Keys.ToList()[rd.Next(possibleTransformations.Count)];
+            return possibleTransformations.Keys.ToList()[GP.rd.Next(possibleTransformations.Count)];
         }
-
-        static string GrowErrorMessage(int currentDepth, int maxDepth)
+        static string GrowErrorMessage(int maxDepth, int currentDepth)
         {
             return $"From node Assignment on depth={currentDepth}:\n\tCannot grow Assignment Node of depth={maxDepth - currentDepth},\n\tMinimum depth is {minDepth}";
+        }
+    
+        //* Copy constructor
+        public static Assignment DeepCopy(Assignment other)
+        {
+            return other switch
+            {
+                BooleanAssignment => BooleanAssignment.DeepCopy((BooleanAssignment)other),
+                NumericAssignment => NumericAssignment.DeepCopy((NumericAssignment)other),
+                _ => throw new System.ArgumentException($"Cannot copy Assignment of type {other.GetType()}")
+            };
         }
     }
 }

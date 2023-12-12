@@ -5,7 +5,11 @@ namespace OurGP.Nodes.Expressions
     public class PrintStatement : Expression
     {
         internal static new readonly int minDepth = 2;
-        private Value _value;
+        private Value Value
+        {
+            get => (Value)_children[0];
+            set => _children[0] = value;
+        }
         // TODO: Create IOut interface and implement it in ConsoleOut
         // private static IOut output;
 
@@ -18,43 +22,54 @@ namespace OurGP.Nodes.Expressions
             // output = 
         }
 
-        // TODO: Copy constructor
-        // public PrintStatement(PrintStatement printStatement)
+        //* Depth constructor
+        public PrintStatement(int depth, Node? parent)
+            : base(1, depth, parent) { }
 
         //* Parameterized constructor
         public PrintStatement(Value value)
+            : base(1)
         {
-            _value = value;
+            Value = value;
         }
 
         //* Grow constructor
-        public PrintStatement(int currentDepth, int maxDepth, Node? parent)
-            : base(currentDepth, parent)
+        public static new PrintStatement Grow(int maxDepth, int currentDepth = 0, Node? parent = null)
         {
             // Console.WriteLine($"PrintStatement.Grow({currentDepth}, {maxDepth})");
             if (maxDepth - currentDepth < minDepth)
-                throw new System.ArgumentException(GrowErrorMessage(currentDepth, maxDepth));
+                throw new System.ArgumentException(GrowErrorMessage(maxDepth, currentDepth));
 
-            _value = Value.Random(currentDepth + 1, maxDepth, this);
+            var node = new PrintStatement(currentDepth, parent);
+            node.Value = Value.Grow(maxDepth, currentDepth + 1, node);
+            return node;
         }
-
-        static string GrowErrorMessage(int currentDepth, int maxDepth)
+        static string GrowErrorMessage(int maxDepth, int currentDepth)
         {
             return $"From node PrintStatement on depth={currentDepth}:\n\tCannot grow PrintStatement Node of depth={maxDepth - currentDepth},\n\tMinimum depth is {minDepth}";
         }
 
+        //* Copy constructor
+        public static PrintStatement DeepCopy(PrintStatement other)
+        {
+            return new PrintStatement(Value.DeepCopy(other.Value));
+        }
 
-        //! ---------- RUN ----------
+
+        //! ---------- PROPERTIES ----------
+        public override int MinDepth => Value.MinDepth + 1;
+        public override int MaxDepth => Value.MaxDepth + 1;
+
+
+        //! ---------- METHODS ----------
         public override void Run()
         {
             // output.Write(_value.IOPrint());
         }
 
-
-        //! ---------- TO STRING ----------
         public override string ToString(string indent = "")
         {
-            return $"{indent}print({_value})";
+            return $"{indent}print({Value})";
         }
     }
 }

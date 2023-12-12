@@ -16,38 +16,50 @@ namespace OurGP.Nodes.Values.BooleanValues
             for (int i = 0; i < _size; i++)
                 _variables[i] = false;
         }
-
-        // TODO: Copy constructor
-        // public BooleanVariable(BooleanVariable booleanVariable)
         
+        //* Depth constructor
+        public BooleanVariable(int depth, Node? parent)
+            : base(0, depth, parent) { }
+
         //* Parameterized constructor
         public BooleanVariable(int index)
+            : base(0)
         {
             _index = index;
         }
 
         //* Grow constructor
-        public BooleanVariable(int currentDepth, int maxDepth, Node? parent)
-            : base(currentDepth, parent)
+        public static new BooleanVariable Grow(int maxDepth, int currentDepth = 0, Node? parent = null)
         {
             // Console.WriteLine($"BooleanVariable.Grow({currentDepth}, {maxDepth})");
             if (maxDepth - currentDepth < minDepth)
-                throw new System.ArgumentException(GrowErrorMessage(currentDepth, maxDepth));
-
-            _index = rd.Next(_size);
+                throw new System.ArgumentException(GrowErrorMessage(maxDepth, currentDepth));
+            
+            return new BooleanVariable(currentDepth, parent)
+            {
+                _index = GP.rd.Next(_size)
+            };
         }
-
-        static string GrowErrorMessage(int currentDepth, int maxDepth)
+        static string GrowErrorMessage(int maxDepth, int currentDepth)
         {
             return $"From node BooleanVariable on depth={currentDepth}:\n\tCannot grow BooleanVariable Node of depth={maxDepth - currentDepth},\n\tMinimum depth is {minDepth}";
         }
 
-        
-        //! ---------- EVALUATION ----------
+        //* Copy constructor
+        public static BooleanVariable DeepCopy(BooleanVariable other)
+        {
+            return new BooleanVariable(other._index);
+        }
+
+
+        //! ---------- PROPERTIES ----------
         public override bool Value => _variables[_index];
 
+        public override int MinDepth => 1;
+        public override int MaxDepth => 1;
 
-        //! ---------- VARIABLE INTERFACE ----------
+
+        //! ---------- METHODS ----------
         public void Assign(Value value)
         {
             if (value is BooleanValue booleanValue)
@@ -56,8 +68,6 @@ namespace OurGP.Nodes.Values.BooleanValues
                 throw new System.Exception("Cannot assign a non-boolean value to a boolean variable.");
         }
 
-
-        //! ---------- TO STRING ----------
         public override string ToString()
         {
             return $"L{_index}";

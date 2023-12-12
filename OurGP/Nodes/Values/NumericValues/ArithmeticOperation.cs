@@ -13,59 +13,81 @@ namespace OurGP.Nodes.Values.NumericValues
 
         internal static new readonly int minDepth = 2;
         private Operator _operator;
-        private NumericValue _left;
-        private NumericValue _right;
+        private NumericValue Left
+        {
+            get => (NumericValue)_children[0];
+            set => _children[0] = value;
+        }
+        private NumericValue Right
+        {
+            get => (NumericValue)_children[1];
+            set => _children[1] = value;
+        }
 
 
         //! ---------- CONSTRUCTORS ----------
-        // TODO: Copy constructor
-        // public ArithmeticOperation(ArithmeticOperation arithmeticOperation)
+        //* Depth constructor
+        public ArithmeticOperation(int depth, Node? parent)
+            : base(2, depth, parent) { }
 
         //* Parameterized constructor
         public ArithmeticOperation(NumericValue left, NumericValue right, Operator @operator)
+            : base(2)
         {
-            _left = left;
-            _right = right;
+            Left = left;
+            Right = right;
             _operator = @operator;
         }
 
         //* Grow constructor
-        public ArithmeticOperation(int currentDepth, int maxDepth, Node? parent)
-            : base(currentDepth, parent)
+        public static new ArithmeticOperation Grow(int maxDepth, int currentDepth = 0, Node? parent = null)
         {
             // Console.WriteLine($"ArithmeticOperation.Grow({currentDepth}, {maxDepth})");
             if (maxDepth - currentDepth < minDepth)
-                throw new System.ArgumentException(GrowErrorMessage(currentDepth, maxDepth));
+                throw new System.ArgumentException(GrowErrorMessage(maxDepth, currentDepth));
 
-            _left = NumericValue.Random(currentDepth + 1, maxDepth, this);
-            _right = NumericValue.Random(currentDepth + 1, maxDepth, this);
-            _operator = (Operator)rd.Next(0, 5);
+            var node = new ArithmeticOperation(currentDepth, parent)
+            {
+                _operator = (Operator)GP.rd.Next(0, 5)
+            };
+            node.Left = NumericValue.Grow(maxDepth, currentDepth + 1, node);
+            node.Right = NumericValue.Grow(maxDepth, currentDepth + 1, node);
+            return node;
         }
-
-        static string GrowErrorMessage(int currentDepth, int maxDepth)
+        static string GrowErrorMessage(int maxDepth, int currentDepth)
         {
             return $"From node ArithmeticOperation on depth={currentDepth}:\n\tCannot grow ArithmeticOperation Node of depth={maxDepth - currentDepth},\n\tMinimum depth is {minDepth}";
         }
 
+        //* Copy constructor
+        public static ArithmeticOperation DeepCopy(ArithmeticOperation other)
+        {
+            return new ArithmeticOperation(NumericValue.DeepCopy(other.Left),
+                                           NumericValue.DeepCopy(other.Right),
+                                           other._operator);
+        }
 
-        //! ---------- EVALUATION ----------
+
+        //! ---------- PROPERTIES ----------
         public override double Value => _operator switch
         {
-            Operator.Addition        => _left.Value + _right.Value,
-            Operator.Subtraction     => _left.Value - _right.Value,
-            Operator.Multiplication  => _left.Value * _right.Value,
-            Operator.Division        => _left.Value / _right.Value,
-            Operator.Modulo          => _left.Value % _right.Value,
+            Operator.Addition        => Left.Value + Right.Value,
+            Operator.Subtraction     => Left.Value - Right.Value,
+            Operator.Multiplication  => Left.Value * Right.Value,
+            Operator.Division        => Left.Value / Right.Value,
+            Operator.Modulo          => Left.Value % Right.Value,
             _ => throw new ArgumentException($"Unknown arithmetic operation type: {_operator}")
         };
 
+        public override int MinDepth => Math.Min(Left.MinDepth, Right.MinDepth) + 1;
+        public override int MaxDepth => Math.Max(Left.MaxDepth, Right.MaxDepth) + 1;
 
-        //! ---------- TO STRING ----------
+
+        //! ---------- METHODS ----------
         public override string ToString()
         {
-            return $"({_left} {OperatorString(_operator)} {_right})";
+            return $"({Left} {OperatorString(_operator)} {Right})";
         }
-
         private static string OperatorString(Operator @operator)
         {
             return @operator switch

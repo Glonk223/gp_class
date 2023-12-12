@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using OurGP.Nodes.Values.NumericValues;
 
 namespace OurGP.Nodes.Expressions.Assignments
@@ -6,50 +5,69 @@ namespace OurGP.Nodes.Expressions.Assignments
     public class NumericAssignment : Assignment
     {
         internal static new readonly int minDepth = 2;
-        private NumericVariable _variable;
-        private NumericValue _value;
+        private NumericVariable Variable
+        {
+            get => (NumericVariable)_children[0];
+            set => _children[0] = value;
+        }
+        private NumericValue Value
+        {
+            get => (NumericValue)_children[1];
+            set => _children[1] = value;
+        }
 
         
         //! ---------- CONSTRUCTORS ----------
-        // TODO: Copy constructor
-        // public NumericAssignment(NumericAssignment assignment)
+        //* Depth constructor
+        public NumericAssignment(int depth, Node? parent)
+            : base(depth, parent) { }
 
         //* Parameterized constructor
         public NumericAssignment(NumericVariable variable, NumericValue value)
         {
-            _variable = variable;
-            _value = value;
+            Variable = variable;
+            Value = value;
         }
 
         //* Grow constructor
-        public NumericAssignment(int currentDepth, int maxDepth, Node? parent)
-            : base(currentDepth, parent)
+        public static new NumericAssignment Grow(int maxDepth, int currentDepth = 0, Node? parent = null)
         {
-            // Console.WriteLine($"NumericAssignment: {currentDepth} {maxDepth}");
+            // Console.WriteLine($"BooleanAssignment: {currentDepth} {maxDepth}");
             if (maxDepth - currentDepth < minDepth)
-                throw new System.ArgumentException(GrowErrorMessage(currentDepth, maxDepth));
+                throw new System.ArgumentException(GrowErrorMessage(maxDepth, currentDepth));
 
-            _variable = new NumericVariable(currentDepth + 1, maxDepth, this);
-            _value = NumericValue.Random(currentDepth + 1, maxDepth, this);
+            var node = new NumericAssignment(currentDepth, parent);
+            node.Variable = NumericVariable.Grow(maxDepth, currentDepth + 1, node);
+            node.Value = NumericValue.Grow(maxDepth, currentDepth + 1, node);
+            return node;
         }
-
-        static string GrowErrorMessage(int currentDepth, int maxDepth)
+        static string GrowErrorMessage(int maxDepth, int currentDepth)
         {
             return $"From node NumericAssignment on depth={currentDepth}:\n\tCannot grow NumericAssignment Node of depth={maxDepth - currentDepth},\n\tMinimum depth is {minDepth}";
         }
 
+        //* Copy constructor
+        public static NumericAssignment DeepCopy(NumericAssignment other)
+        {
+            return new NumericAssignment(NumericVariable.DeepCopy(other.Variable),
+                                            NumericValue.DeepCopy(other.Value));
+        }
+        
 
-        //! ---------- RUN ----------
+        //! ---------- PROPERTIES ----------
+        public override int MinDepth => Math.Min(Variable.MinDepth, Value.MinDepth) + 1;
+        public override int MaxDepth => Math.Max(Variable.MaxDepth, Value.MaxDepth) + 1;
+
+
+        //! ---------- METHODS ----------
         public override void Run()
         {
-            _variable.Assign(_value);
+            Variable.Assign(Value);
         }
 
-
-        //! ---------- TO STRING ----------
         public override string ToString(string indent = "")
         {
-            return $"{indent}{_variable} = {_value}";
+            return $"{indent}{Variable} = {Value}";
         }
     }
 }

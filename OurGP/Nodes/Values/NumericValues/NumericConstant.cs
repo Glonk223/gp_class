@@ -1,5 +1,3 @@
-using OurGP.Nodes.Expressions.Assignments;
-
 namespace OurGP.Nodes.Values.NumericValues
 {
     public class NumericConstant : NumericValue, IConstant
@@ -19,37 +17,49 @@ namespace OurGP.Nodes.Values.NumericValues
                 _constants[i] = i; // TODO: _constants[i] = ranodm double in range [0 - RandomMax]
         }
 
-        // TODO: Copy constructor
-        // public NumericConstant(NumericConstant numericConstant)
+        //* Depth constructor
+        public NumericConstant(int depth, Node? parent)
+            : base(0, depth, parent) { }
 
         //* Parameterized constructor
-        public NumericConstant(int index)
+        public NumericConstant(double constant)
+            : base(0)
         {
-            _index = index;
+            // TODO
         }
         
         //* Grow constructor
-        public NumericConstant(int currentDepth, int maxDepth, Node? parent)
-            : base(currentDepth, parent)
+        public static new NumericConstant Grow(int maxDepth, int currentDepth = 0, Node? parent = null)
         {
             // Console.WriteLine($"NumericConstant.Grow({currentDepth}, {maxDepth})");
             if (maxDepth - currentDepth < minDepth)
-                throw new System.ArgumentException(GrowErrorMessage(currentDepth, maxDepth));
+                throw new System.ArgumentException(GrowErrorMessage(maxDepth, currentDepth));
 
-            _index = rd.Next(_size);
+            return new NumericConstant(currentDepth, parent)
+            {
+                _index = GP.rd.Next(_size)
+            };
         }
-
-        static string GrowErrorMessage(int currentDepth, int maxDepth)
+        static string GrowErrorMessage(int maxDepth, int currentDepth)
         {
             return $"From node NumericConstant on depth={currentDepth}:\n\tCannot grow NumericConstant Node of depth={maxDepth - currentDepth},\n\tMinimum depth is {minDepth}";
         }
 
+        //* Copy constructor
+        public static NumericConstant DeepCopy(NumericConstant other)
+        {
+            return new NumericConstant(_constants[other._index]);
+        }
 
-        //! ---------- EVALUATION ----------
+
+        //! ---------- PROPERTIES ----------
         public override double Value => _constants[_index];
 
+        public override int MinDepth => 1;
+        public override int MaxDepth => 1;
 
-        //! ---------- TO STRING ----------
+
+        //! ---------- METHODS ----------
         public override string ToString()
         {
             return $"{_constants[_index]}";

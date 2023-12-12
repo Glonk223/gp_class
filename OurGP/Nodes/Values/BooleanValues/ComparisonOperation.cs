@@ -17,60 +17,82 @@ namespace OurGP.Nodes.Values.BooleanValues
 
         internal static new readonly int minDepth = 2;
         private Operator _operator;
-        private NumericValue _left;
-        private NumericValue _right;
+        private NumericValue Left
+        {
+            get => (NumericValue)_children[0];
+            set => _children[0] = value;
+        }
+        private NumericValue Right
+        {
+            get => (NumericValue)_children[1];
+            set => _children[1] = value;
+        }
 
 
         //! ---------- CONSTRUCTORS ----------
-        // TODO: Copy constructor
-        // public ComparisonOperation(ComparisonOperation comparisonOperation)
-        
+        //* Depth constructor
+        public ComparisonOperation(int depth, Node? parent)
+            : base(2, depth, parent) { }
+
         //* Parameterized constructor
         public ComparisonOperation(NumericValue left, NumericValue right, Operator @operator)
+            : base(2)
         {
-            _left = left;
-            _right = right;
+            Left = left;
+            Right = right;
             _operator = @operator;
         }
 
         //* Grow constructor
-        public ComparisonOperation(int currentDepth, int maxDepth, Node? parent)
-            : base(currentDepth, parent)
+        public static new ComparisonOperation Grow(int maxDepth, int currentDepth = 0, Node? parent = null)
         {
             // Console.WriteLine($"ComparisonOperation.Grow({currentDepth}, {maxDepth})");
             if (maxDepth - currentDepth < minDepth)
-                throw new System.ArgumentException(GrowErrorMessage(currentDepth, maxDepth));
+                throw new System.ArgumentException(GrowErrorMessage(maxDepth, currentDepth));
 
-            _left = NumericValue.Random(currentDepth + 1, maxDepth, this);
-            _right = NumericValue.Random(currentDepth + 1, maxDepth, this);
-            _operator = (Operator)rd.Next(0, 6);
+            var node = new ComparisonOperation(currentDepth, parent)
+            {
+                _operator = (Operator)GP.rd.Next(0, 6)
+            };
+            node.Left = NumericValue.Grow(maxDepth, currentDepth + 1, node);
+            node.Right = NumericValue.Grow(maxDepth, currentDepth + 1, node);
+            return node;
         }
-
-        static string GrowErrorMessage(int currentDepth, int maxDepth)
+        static string GrowErrorMessage(int maxDepth, int currentDepth)
         {
             return $"From node ComparisonOperation on depth={currentDepth}:\n\tCannot grow ComparisonOperation Node of depth={maxDepth - currentDepth},\n\tMinimum depth is {minDepth}";
         }
 
+        //* Copy constructor
+        public static ComparisonOperation DeepCopy(ComparisonOperation other)
+        {
+            return new ComparisonOperation(NumericValue.DeepCopy(other.Left),
+                                           NumericValue.DeepCopy(other.Right),
+                                           other._operator);
+        }
 
-        //! ---------- EVALUATION ----------
+
+        //! ---------- PROPERTIES ----------
         public override bool Value => _operator switch
         {
-            Operator.Equal              => _left.Value == _right.Value,
-            Operator.NotEqual           => _left.Value != _right.Value,
-            Operator.LessThan           => _left.Value  < _right.Value,
-            Operator.GreaterThan        => _left.Value  > _right.Value,
-            Operator.LessThanOrEqual    => _left.Value <= _right.Value,
-            Operator.GreaterThanOrEqual => _left.Value >= _right.Value,
+            Operator.Equal              => Left.Value == Right.Value,
+            Operator.NotEqual           => Left.Value != Right.Value,
+            Operator.LessThan           => Left.Value  < Right.Value,
+            Operator.GreaterThan        => Left.Value  > Right.Value,
+            Operator.LessThanOrEqual    => Left.Value <= Right.Value,
+            Operator.GreaterThanOrEqual => Left.Value >= Right.Value,
             _ => throw new ArgumentException($"Unknown comparison operation type: {_operator}")
         };
 
+        public override int MinDepth => Math.Min(Left.MinDepth, Right.MinDepth) + 1;
+        public override int MaxDepth => Math.Max(Left.MaxDepth, Right.MaxDepth) + 1;
 
-        //! ---------- TO STRING ----------
+
+        //! ---------- METHODS ----------
         public override string ToString()
         {
-            return $"{_left} {OperatorString(_operator)} {_right}";
+            return $"{Left} {OperatorString(_operator)} {Right}";
         }
-
         public static string OperatorString(Operator @operator)
         {
             return @operator switch

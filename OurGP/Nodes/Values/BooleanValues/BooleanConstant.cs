@@ -8,37 +8,49 @@ namespace OurGP.Nodes.Values.BooleanValues
 
 
         //! ---------- CONSTRUCTORS ----------
-        // TODO: Copy constructor
-        // public BooleanConstant(BooleanConstant booleanConstant)
-        
+        //* Depth constructor
+        public BooleanConstant(int depth, Node? parent)
+            : base(0, depth, parent) { }
+
         //* Parameterized constructor
-        public BooleanConstant(int index)
+        public BooleanConstant(bool constant)
+            : base(0)
         {
-            _index = index;
+            _index = constant ? 0 : 1;
         }
 
         //* Grow constructor
-        public BooleanConstant(int currentDepth, int maxDepth, Node? parent)
-            : base(currentDepth, parent)
+        public static new BooleanConstant Grow(int maxDepth, int currentDepth = 0, Node? parent = null)
         {
             // Console.WriteLine($"BooleanConstant.Grow({currentDepth}, {maxDepth})");
             if (maxDepth - currentDepth < minDepth)
-                throw new System.ArgumentException(GrowErrorMessage(currentDepth, maxDepth));
+                throw new System.ArgumentException(GrowErrorMessage(maxDepth, currentDepth));
 
-            _index = rd.Next(2);
+            return new BooleanConstant(currentDepth, parent)
+            {
+                _index = GP.rd.Next(2)
+            };
         }
-
-        static string GrowErrorMessage(int currentDepth, int maxDepth)
+        static string GrowErrorMessage(int maxDepth, int currentDepth)
         {
             return $"From node BooleanConstant on depth={currentDepth}:\n\tCannot grow BooleanConstant Node of depth={maxDepth - currentDepth},\n\tMinimum depth is {minDepth}";
         }
         
-        
-        //! ---------- EVALUATION ----------
+        //* Copy constructor
+        public static BooleanConstant DeepCopy(BooleanConstant other)
+        {
+            return new BooleanConstant(_constants[other._index]);
+        }
+
+
+        //! ---------- PROPERTIES ----------
         public override bool Value => _constants[_index];
 
+        public override int MinDepth => 1;
+        public override int MaxDepth => 1;
 
-        //! ---------- TO STRING ----------
+
+        //! ---------- METHODS ----------
         public override string ToString()
         {
             return $"{_constants[_index]}";
