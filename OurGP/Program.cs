@@ -10,12 +10,15 @@ Console.WriteLine($"Seed: {GP.Seed}\n");
 // for (int i = 0; i < population.Length; i++)
 //     population[i] = OurGP.Nodes.Program.Grow(100);
 
-var program = OurGP.Nodes.Program.Grow(1000);
+var program = OurGP.Nodes.Program.Grow(15);
 
 Console.WriteLine(program);
-Console.WriteLine(program.MinDepth);
-Console.WriteLine(program.MaxDepth);
 
+// GP.Seed = (int)DateTime.UtcNow.Ticks;
+
+program.Mutate();
+
+Console.WriteLine("\n" + program);
 // program.PrintDebugTree();
 
 // var program2 = OurGP.Nodes.Program.DeepCopy(program);

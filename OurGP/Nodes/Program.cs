@@ -31,6 +31,8 @@ namespace OurGP.Nodes
             
             var node = new Program(currentDepth, parent);
             node.Expressions = ExpressionList.Grow(maxDepth, currentDepth+1, node);
+
+            node.FixSubtreeCountTopDown();
             return node;
         }
         static string GrowErrorMessage(int maxDepth, int currentDepth)

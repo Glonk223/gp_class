@@ -24,7 +24,7 @@ namespace OurGP.Nodes
         //* Grow constructor
         public static Node Grow(int maxDepth, int currentDepth = 0, Node? parent = null)
         {
-            throw new NotImplementedException("Not implemented and it'll newer be.\n💀💀💀\nHow you would expect it to work on an abstract Node pall?!");
+            throw new NotImplementedException("Not implemented and it'll newer be.\nHow you would expect it to work on an abstract Node pall?!\n💀💀💀");
         }
 
 
@@ -83,6 +83,9 @@ namespace OurGP.Nodes
             (a.currentDepth, b.currentDepth) = (b.currentDepth, a.currentDepth);
             (      a.parent, b.parent      ) = (      b.parent, a.parent      );
             (             a, b             ) = (             b, a             );
+
+            a.FixSubtreeCountBottomUp();
+            b.FixSubtreeCountBottomUp();
         }
 
         public override string ToString() { return ToString(indent: ""); }
@@ -91,6 +94,7 @@ namespace OurGP.Nodes
         public Node GetRandomNode()
         {
             int index = GP.rd.Next(subtreeCount);
+            // Console.WriteLine($"GetRandomNode() => {index}");
             return GetNodeAt(index);
         }
         public Node GetNodeAt(int index)
@@ -119,10 +123,24 @@ namespace OurGP.Nodes
         //! ---------- GENETIC OPERATIONS ----------
         public void Mutate()
         {
-            var par = parent;
+            var node = GetRandomNode();
 
-            
+            // Console.WriteLine($"Mutating {node.GetType().Name} on depth {node.currentDepth} with subtreeCount {node.subtreeCount}, maxDepth {node.MaxDepth}, minDepth {node.MinDepth}");
+            // Console.WriteLine($"Before mutation:\n{node}");
+
+            int newMaxDepth = (int)(node.MaxDepth * 1.5);
+
+            var growMethod = node.GetType().GetMethod("Grow", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public);
+            if (growMethod != null)
+            {
+                var newNode = growMethod.Invoke(null, new object[] { newMaxDepth + node.currentDepth, node.currentDepth, node.parent! }) as Node;
+                // Console.WriteLine($"After mutation:\n{newNode}");
+                Console.WriteLine(node);
+                Console.WriteLine("=>");
+                Swap(ref node, ref newNode!);
+                Console.WriteLine(node);
+            }
         }
         // public abstract void Crossover(Node other);
-    } 
+    }
 }
