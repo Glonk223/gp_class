@@ -12,7 +12,7 @@ expressions
         | while_loop
         | print_call
         | scan_call
-        | assignment) (expressions | )
+        | assignment) expressions?
     ;
 
 //! ----- IF_STATEMENT -----
