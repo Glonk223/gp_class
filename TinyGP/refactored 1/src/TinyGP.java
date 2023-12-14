@@ -238,16 +238,16 @@ public class TinyGP {
     }
 
     public static void main(String[] args) throws IOException {
-        String filename = "/home/johny/IdeaProjects/genetyczne_lab01/src/f1.dat";
+        String filename = "./src/f1.dat";
         long s = -1;
-        String path = "/home/johny/IdeaProjects/genetyczne_lab01/data/";
-        File dir = new File("/home/johny/IdeaProjects/genetyczne_lab01/data/");
+        String path = "./data/";
+        File dir = new File("./data/");
         File[] directiorListing = dir.listFiles();
         if (directiorListing != null) {
             for (File child: directiorListing){
                 TinyGP gp = new TinyGP(path+child.getName(), s);
-                OutputGP.writer_programs = new BufferedWriter(new FileWriter("/home/johny/IdeaProjects/genetyczne_lab01/output/out_"+child.getName()));
-                OutputGP.writer_stats = new BufferedWriter(new FileWriter("/home/johny/IdeaProjects/genetyczne_lab01/output/stats_"+child.getName()));
+                OutputGP.writer_programs = new BufferedWriter(new FileWriter("./data/output/out_"+child.getName()));
+                OutputGP.writer_stats = new BufferedWriter(new FileWriter("./data/output/stats_"+child.getName()));
                 EvolutionGP.evolve(gp);
             }
         }
