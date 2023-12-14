@@ -1,6 +1,6 @@
 namespace OurGP.Nodes.Values.NumericValues
 {
-    public class ArithmeticOperation : NumericValue
+    public class ArithmeticOperation : NumericValue, IOperation
     {
         public enum Operator
         {
@@ -60,11 +60,9 @@ namespace OurGP.Nodes.Values.NumericValues
         }
 
         //* Copy constructor
-        public static ArithmeticOperation DeepCopy(ArithmeticOperation other)
+        public new ArithmeticOperation DeepCopy()
         {
-            return new ArithmeticOperation(NumericValue.DeepCopy(other.Left),
-                                           NumericValue.DeepCopy(other.Right),
-                                           other._operator);
+            return new ArithmeticOperation(Left.DeepCopy(), Right.DeepCopy(), _operator);
         }
 
 
@@ -84,13 +82,12 @@ namespace OurGP.Nodes.Values.NumericValues
 
 
         //! ---------- METHODS ----------
-        public override string ToString()
-        {
-            return $"({Left} {OperatorString(_operator)} {Right})";
-        }
-        private static string OperatorString(Operator @operator)
-        {
-            return @operator switch
+        public override string ToString() =>
+            (Left is IOperation  ? $"({Left})"  : $"{Left}" ) +
+            $" {OperatorString(_operator)} " +
+            (Right is IOperation ? $"({Right})" : $"{Right}");
+        private static string OperatorString(Operator @operator) =>
+            @operator switch
             {
                 Operator.Addition        => "+",
                 Operator.Subtraction     => "-",
@@ -99,6 +96,5 @@ namespace OurGP.Nodes.Values.NumericValues
                 Operator.Modulo          => "%",
                 _ => throw new ArgumentException($"Unknown arithmetic operation type: {@operator}")
             };
-        }
     }
 }

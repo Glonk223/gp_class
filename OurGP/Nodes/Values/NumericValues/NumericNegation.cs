@@ -28,7 +28,7 @@ namespace OurGP.Nodes.Values.NumericValues
             // Console.WriteLine($"ArithmeticOperation.Grow({currentDepth}, {maxDepth})");
             if (maxDepth - currentDepth < minDepth)
                 throw new System.ArgumentException(GrowErrorMessage(maxDepth, currentDepth));
-                
+
             var node = new NumericNegation(currentDepth, parent);
             node.NValue = NumericValue.Grow(maxDepth, currentDepth + 1, node);
             return node;
@@ -39,9 +39,9 @@ namespace OurGP.Nodes.Values.NumericValues
         }
 
         //* Copy constructor
-        public static NumericNegation DeepCopy(NumericNegation other)
+        public new NumericNegation DeepCopy()
         {
-            return new NumericNegation(NumericValue.DeepCopy(other.NValue));
+            return new NumericNegation(NValue.DeepCopy());
         }
 
 
@@ -55,6 +55,8 @@ namespace OurGP.Nodes.Values.NumericValues
         //! ---------- METHODS ----------
         public override string ToString()
         {
+            if (NValue is NumericVariable or NumericConstant)
+                return $"-{NValue}";
             return $"-({NValue})";
         }
     }

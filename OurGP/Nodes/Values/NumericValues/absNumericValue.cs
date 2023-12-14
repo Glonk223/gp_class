@@ -24,7 +24,7 @@ namespace OurGP.Nodes.Values.NumericValues
             if (maxDepth-currentDepth < minDepth)
                 throw new System.ArgumentException(GrowErrorMessage(maxDepth, currentDepth));
 
-            return GetTransformationType(maxDepth-currentDepth) switch
+            return GetTransformationType(maxDepth-currentDepth, parent) switch
             {
                 "ArithmeticOperation" => ArithmeticOperation.Grow(maxDepth, currentDepth, parent),
                 "NumericConstant"     =>     NumericConstant.Grow(maxDepth, currentDepth, parent),
@@ -33,10 +33,17 @@ namespace OurGP.Nodes.Values.NumericValues
                 _ => throw new System.ArgumentException(GrowErrorMessage(maxDepth, currentDepth))
             };
         }
-        static string GetTransformationType(int requiredDepth)
+        static string GetTransformationType(int requiredDepth, Node? parent = null)
         {
-            var possibleTransformationsFiltered = possibleTransformations.Where(x => x.Value <= requiredDepth).ToDictionary(x => x.Key, x => x.Value).Keys.ToList();
-            return possibleTransformationsFiltered[GP.rd.Next(possibleTransformationsFiltered.Count)];
+            var ptFiltered =
+                possibleTransformations
+                    .Where(x => x.Value <= requiredDepth)
+                    .ToDictionary(x => x.Key, x => x.Value)
+                    .Keys.ToList();
+
+            if (parent is not NumericNegation)
+                return ptFiltered[GP.rd.Next(ptFiltered.Count)];
+            return ptFiltered.Where(x => x != "NumericNegation").ToList()[GP.rd.Next(ptFiltered.Count - 1)];
         }
         static string GrowErrorMessage(int maxDepth, int currentDepth)
         {
@@ -44,15 +51,15 @@ namespace OurGP.Nodes.Values.NumericValues
         }
 
         //* Copy constructor
-        public static NumericValue DeepCopy(NumericValue other)
+        public new NumericValue DeepCopy()
         {
-            return other switch
+            return this switch
             {
-                ArithmeticOperation => ArithmeticOperation.DeepCopy((ArithmeticOperation)other),
-                NumericConstant     =>     NumericConstant.DeepCopy((NumericConstant)    other),
-                NumericNegation     =>     NumericNegation.DeepCopy((NumericNegation)    other),
-                NumericVariable     =>     NumericVariable.DeepCopy((NumericVariable)    other),
-                _ => throw new System.ArgumentException($"Cannot copy NumericValue of type {other.GetType()}")
+                ArithmeticOperation arithmeticOperation => arithmeticOperation.DeepCopy(),
+                NumericConstant         numericConstant =>     numericConstant.DeepCopy(),
+                NumericNegation         numericNegation =>     numericNegation.DeepCopy(),
+                NumericVariable         numericVariable =>     numericVariable.DeepCopy(),
+                _ => throw new System.ArgumentException($"Cannot copy NumericValue of type {GetType().Name}")
             };
         }
 

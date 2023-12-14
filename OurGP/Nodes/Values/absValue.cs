@@ -43,13 +43,13 @@ namespace OurGP.Nodes.Values
         }
 
         //* Copy constructor
-        public static Value DeepCopy(Value other)
+        public Value DeepCopy()
         {
-            return other switch
+            return this switch
             {
-                BooleanValue => BooleanValue.DeepCopy((BooleanValue)other),
-                NumericValue => NumericValue.DeepCopy((NumericValue)other),
-                _ => throw new System.ArgumentException($"Cannot copy Value of type {other.GetType()}")
+                BooleanValue booleanValue => booleanValue.DeepCopy(),
+                NumericValue numericValue => numericValue.DeepCopy(),
+                _ => throw new System.ArgumentException($"Cannot copy Value of type {GetType()}")
             };
         }
 

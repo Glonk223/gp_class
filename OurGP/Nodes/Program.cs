@@ -41,9 +41,11 @@ namespace OurGP.Nodes
         }
 
         //* Copy constructor
-        public static Program DeepCopy(Program other)
+        public Program DeepCopy()
         {
-            return new Program(ExpressionList.DeepCopy(other.Expressions));
+            var p = new Program(Expressions.DeepCopy());
+            p.FixDependecies();
+            return p;
         }
 
 

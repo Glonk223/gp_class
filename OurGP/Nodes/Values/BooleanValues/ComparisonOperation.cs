@@ -3,7 +3,7 @@ using OurGP.Nodes.Values.NumericValues;
 namespace OurGP.Nodes.Values.BooleanValues
 {
     
-    public class ComparisonOperation : BooleanValue
+    public class ComparisonOperation : BooleanValue, IOperation
     {
         public enum Operator
         {
@@ -64,11 +64,9 @@ namespace OurGP.Nodes.Values.BooleanValues
         }
 
         //* Copy constructor
-        public static ComparisonOperation DeepCopy(ComparisonOperation other)
+        public new ComparisonOperation DeepCopy()
         {
-            return new ComparisonOperation(NumericValue.DeepCopy(other.Left),
-                                           NumericValue.DeepCopy(other.Right),
-                                           other._operator);
+            return new ComparisonOperation(Left.DeepCopy(), Right.DeepCopy(), _operator);
         }
 
 
@@ -89,13 +87,12 @@ namespace OurGP.Nodes.Values.BooleanValues
 
 
         //! ---------- METHODS ----------
-        public override string ToString()
-        {
-            return $"{Left} {OperatorString(_operator)} {Right}";
-        }
-        public static string OperatorString(Operator @operator)
-        {
-            return @operator switch
+        public override string ToString() =>
+            (Left is IOperation  ? $"({Left})"  : $"{Left}" ) +
+            $" {OperatorString(_operator)} " +
+            (Right is IOperation ? $"({Right})" : $"{Right}");
+        private static string OperatorString(Operator @operator) =>
+            @operator switch
             {
                 Operator.Equal              => "==",
                 Operator.NotEqual           => "!=",
@@ -105,6 +102,5 @@ namespace OurGP.Nodes.Values.BooleanValues
                 Operator.GreaterThanOrEqual => ">=",
                 _ => throw new ArgumentException($"Unknown comparison operation type: {@operator}")
             };
-        }
     }
 }

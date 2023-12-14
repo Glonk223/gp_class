@@ -39,13 +39,13 @@ namespace OurGP.Nodes.Expressions.Assignments
         }
     
         //* Copy constructor
-        public static Assignment DeepCopy(Assignment other)
+        public new Assignment DeepCopy()
         {
-            return other switch
+            return this switch
             {
-                BooleanAssignment => BooleanAssignment.DeepCopy((BooleanAssignment)other),
-                NumericAssignment => NumericAssignment.DeepCopy((NumericAssignment)other),
-                _ => throw new System.ArgumentException($"Cannot copy Assignment of type {other.GetType()}")
+                BooleanAssignment booleanAssignment => booleanAssignment.DeepCopy(),
+                NumericAssignment numericAssignment => numericAssignment.DeepCopy(),
+                _ => throw new System.ArgumentException($"Cannot copy Assignment of type {GetType().Name}")
             };
         }
     }

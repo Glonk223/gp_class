@@ -3,8 +3,9 @@ namespace OurGP.Nodes.Values.NumericValues
     public class NumericConstant : NumericValue, IConstant
     {
         internal static new readonly int minDepth = 1;
-        private static readonly int _size = 100; // TODO: _size = ConstNum
+        private static readonly int _size = 100;
         private static readonly double[] _constants;
+        private static int _assignmentCounter = 0;
         private int _index;
 
 
@@ -25,7 +26,18 @@ namespace OurGP.Nodes.Values.NumericValues
         public NumericConstant(double constant)
             : base(0)
         {
-            // TODO
+            _index = Array.IndexOf(_constants, constant);
+            
+            if (_index == -1)
+            {
+                _index = _assignmentCounter++;
+                _constants[_index] = constant;
+            }
+        }
+        public NumericConstant(int index)
+            : base(0)
+        {
+            _index = index;
         }
         
         //* Grow constructor
@@ -46,9 +58,9 @@ namespace OurGP.Nodes.Values.NumericValues
         }
 
         //* Copy constructor
-        public static NumericConstant DeepCopy(NumericConstant other)
+        public new NumericConstant DeepCopy()
         {
-            return new NumericConstant(_constants[other._index]);
+            return new NumericConstant(_index);
         }
 
 

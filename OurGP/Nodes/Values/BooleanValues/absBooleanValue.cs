@@ -1,3 +1,5 @@
+using OurGP.Nodes.Values.NumericValues;
+
 namespace OurGP.Nodes.Values.BooleanValues
 {
     public abstract class BooleanValue : Value
@@ -25,7 +27,7 @@ namespace OurGP.Nodes.Values.BooleanValues
             if (maxDepth - currentDepth < minDepth)
                 throw new System.ArgumentException(GrowErrorMessage(maxDepth, currentDepth));
 
-            return GetTransformationType(maxDepth - currentDepth) switch
+            return GetTransformationType(maxDepth - currentDepth, parent) switch
             {
                 "BooleanConstant"     =>     BooleanConstant.Grow(maxDepth, currentDepth, parent),
                 "BooleanNegation"     =>     BooleanNegation.Grow(maxDepth, currentDepth, parent),
@@ -35,10 +37,17 @@ namespace OurGP.Nodes.Values.BooleanValues
                 _ => throw new System.ArgumentException(GrowErrorMessage(maxDepth, currentDepth))
             };
         }
-        static string GetTransformationType(int requiredDepth)
+        static string GetTransformationType(int requiredDepth, Node? parent = null)
         {
-            var possibleTransformationsFiltered = possibleTransformations.Where(x => x.Value <= requiredDepth).ToDictionary(x => x.Key, x => x.Value).Keys.ToList();
-            return possibleTransformationsFiltered[GP.rd.Next(possibleTransformationsFiltered.Count)];
+            var psFiltered =
+                possibleTransformations
+                    .Where(x => x.Value <= requiredDepth)
+                    .ToDictionary(x => x.Key, x => x.Value)
+                    .Keys.ToList();
+            
+            if (parent is not BooleanNegation)
+                return psFiltered[GP.rd.Next(psFiltered.Count)];
+            return psFiltered.Where(x => x != "BooleanNegation").ToList()[GP.rd.Next(psFiltered.Count - 1)];
         }
         static string GrowErrorMessage(int maxDepth, int currentDepth)
         {
@@ -46,16 +55,16 @@ namespace OurGP.Nodes.Values.BooleanValues
         }
 
         //* Copy constructor
-        public static BooleanValue DeepCopy(BooleanValue other)
+        public new BooleanValue DeepCopy()
         {
-            return other switch
+            return this switch
             {
-                BooleanConstant     =>     BooleanConstant.DeepCopy((BooleanConstant)    other),
-                BooleanNegation     =>     BooleanNegation.DeepCopy((BooleanNegation)    other),
-                BooleanVariable     =>     BooleanVariable.DeepCopy((BooleanVariable)    other),
-                ComparisonOperation => ComparisonOperation.DeepCopy((ComparisonOperation)other),
-                LogicOperation      =>      LogicOperation.DeepCopy((LogicOperation)     other),
-                _ => throw new System.ArgumentException($"Cannot copy BooleanValue of type {other.GetType()}")
+                BooleanConstant         booleanConstant =>     booleanConstant.DeepCopy(),
+                BooleanNegation         booleanNegation =>     booleanNegation.DeepCopy(),
+                BooleanVariable         booleanVariable =>     booleanVariable.DeepCopy(),
+                ComparisonOperation comparisonOperation => comparisonOperation.DeepCopy(),
+                LogicOperation           logicOperation =>      logicOperation.DeepCopy(),
+                _ => throw new System.ArgumentException($"Cannot copy BooleanValue of type {GetType().Name}")
             };
         }
 

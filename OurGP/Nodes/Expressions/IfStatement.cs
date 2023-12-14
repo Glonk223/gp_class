@@ -49,10 +49,9 @@ namespace OurGP.Nodes.Expressions
         }
 
         //* Copy constructor
-        public static IfStatement DeepCopy(IfStatement other)
+        public new IfStatement DeepCopy()
         {
-            return new IfStatement(BooleanValue.DeepCopy(other.Condition),
-                                 ExpressionList.DeepCopy(other.Expressions));
+            return new IfStatement(Condition.DeepCopy(), Expressions.DeepCopy());
         }
 
 

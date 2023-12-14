@@ -48,10 +48,9 @@ namespace OurGP.Nodes.Expressions
         }
 
         //* Copy constructor
-        public static WhileStatement DeepCopy(WhileStatement other)
+        public new WhileStatement DeepCopy()
         {
-            return new WhileStatement(BooleanValue.DeepCopy(other.Condition),
-                                    ExpressionList.DeepCopy(other.Block));
+            return new WhileStatement(Condition.DeepCopy(), Block.DeepCopy());
         }
 
 

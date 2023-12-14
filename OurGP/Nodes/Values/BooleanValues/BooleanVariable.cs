@@ -3,7 +3,7 @@ namespace OurGP.Nodes.Values.BooleanValues
     public class BooleanVariable : BooleanValue, IVariable
     {
         internal static new readonly int minDepth = 1;
-        private static readonly int _size = 10; // TODO: _size = VarNum
+        private static readonly int _size = 10;
         private static bool[] _variables;
         private int _index;
 
@@ -46,9 +46,9 @@ namespace OurGP.Nodes.Values.BooleanValues
         }
 
         //* Copy constructor
-        public static BooleanVariable DeepCopy(BooleanVariable other)
+        public new BooleanVariable DeepCopy()
         {
-            return new BooleanVariable(other._index);
+            return new BooleanVariable(_index);
         }
 
 

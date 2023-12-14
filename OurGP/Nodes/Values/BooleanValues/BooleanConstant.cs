@@ -18,6 +18,11 @@ namespace OurGP.Nodes.Values.BooleanValues
         {
             _index = constant ? 0 : 1;
         }
+        public BooleanConstant(int index)
+            : base(0)
+        {
+            _index = index;
+        }
 
         //* Grow constructor
         public static new BooleanConstant Grow(int maxDepth, int currentDepth = 0, Node? parent = null)
@@ -37,9 +42,9 @@ namespace OurGP.Nodes.Values.BooleanValues
         }
         
         //* Copy constructor
-        public static BooleanConstant DeepCopy(BooleanConstant other)
+        public new BooleanConstant DeepCopy()
         {
-            return new BooleanConstant(_constants[other._index]);
+            return new BooleanConstant(_index);
         }
 
 

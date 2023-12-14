@@ -1,6 +1,6 @@
 namespace OurGP.Nodes.Values.BooleanValues
 {
-    public class LogicOperation : BooleanValue
+    public class LogicOperation : BooleanValue, IOperation
     {
         public enum Operator
         {
@@ -57,11 +57,9 @@ namespace OurGP.Nodes.Values.BooleanValues
         }
 
         //* Copy constructor
-        public static LogicOperation DeepCopy(LogicOperation other)
+        public new LogicOperation DeepCopy()
         {
-            return new LogicOperation(BooleanValue.DeepCopy(other.Left),
-                                      BooleanValue.DeepCopy(other.Right),
-                                      other._operator);
+            return new LogicOperation(Left.DeepCopy(), Right.DeepCopy(), _operator);
         }
 
 
@@ -78,18 +76,16 @@ namespace OurGP.Nodes.Values.BooleanValues
 
 
         //! ---------- METHODS ----------
-        public override string ToString()
-        {
-            return $"{Left} {OperatorString(_operator)} {Right}";
-        }
-        public static string OperatorString(Operator @operator)
-        {
-            return @operator switch
+        public override string ToString() =>
+            (Left is IOperation  ? $"({Left})"  : $"{Left}" ) + 
+            $" {OperatorString(_operator)} " + 
+            (Right is IOperation ? $"({Right})" : $"{Right}");
+        private static string OperatorString(Operator @operator) =>
+            @operator switch
             {
                 Operator.And => "&&",
                 Operator.Or  => "||",
                 _ => throw new ArgumentException($"Unknown comparison operation type: {@operator}")
             };
-        }
     }
 }

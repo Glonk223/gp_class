@@ -38,12 +38,12 @@ namespace OurGP.Nodes.Values
         }
 
         //* Copy constructor
-        public static IVariable DeepCopy(IVariable other)
+        public IVariable DeepCopy()
         {
-            return other switch
+            return this switch
             {
-                NumericVariable numericVariable => NumericVariable.DeepCopy(numericVariable),
-                BooleanVariable booleanVariable => BooleanVariable.DeepCopy(booleanVariable),
+                NumericVariable numericVariable => numericVariable.DeepCopy(),
+                BooleanVariable booleanVariable => booleanVariable.DeepCopy(),
                 _ => throw new System.Exception("Cannot copy a non-variable.")
             };
         }

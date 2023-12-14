@@ -47,10 +47,9 @@ namespace OurGP.Nodes.Expressions.Assignments
         }
 
         //* Copy constructor
-        public static BooleanAssignment DeepCopy(BooleanAssignment other)
+        public new BooleanAssignment DeepCopy()
         {
-            return new BooleanAssignment(BooleanVariable.DeepCopy(other.Variable),
-                                            BooleanValue.DeepCopy(other.Value));
+            return new BooleanAssignment(Variable.DeepCopy(), Value.DeepCopy());
         }
 
 

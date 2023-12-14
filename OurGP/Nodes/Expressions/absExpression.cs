@@ -48,17 +48,20 @@ namespace OurGP.Nodes.Expressions
         }
 
         //* Copy constructor
-        public static Expression DeepCopy(Expression other)
+        public Expression DeepCopy()
         {
-            return other switch
+            return this switch
             {
-                Assignment     =>     Assignment.DeepCopy((Assignment)    other),
-                IfStatement    =>    IfStatement.DeepCopy((IfStatement)   other),
-                WhileStatement => WhileStatement.DeepCopy((WhileStatement)other),
-                PrintStatement => PrintStatement.DeepCopy((PrintStatement)other),
-                ScanStatement  =>  ScanStatement.DeepCopy((ScanStatement) other),
-                _ => throw new System.ArgumentException($"Cannot copy Expression of type {other.GetType().Name}")
+                Assignment         assignment =>     assignment.DeepCopy(),
+                IfStatement       ifStatement =>    ifStatement.DeepCopy(),
+                WhileStatement whileStatement => whileStatement.DeepCopy(),
+                PrintStatement printStatement => printStatement.DeepCopy(),
+                ScanStatement   scanStatement =>  scanStatement.DeepCopy(),
+                _ => throw new System.ArgumentException($"Cannot copy Expression of type {GetType().Name}")
             };
         }
+
+
+        // TODO: public abstract void Run();
     }
 }

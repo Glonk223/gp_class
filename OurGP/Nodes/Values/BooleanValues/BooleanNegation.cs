@@ -39,9 +39,9 @@ namespace OurGP.Nodes.Values.BooleanValues
         }
 
         //* Copy constructor
-        public static BooleanNegation DeepCopy(BooleanNegation other)
+        public new BooleanNegation DeepCopy()
         {
-            return new BooleanNegation(BooleanValues.BooleanValue.DeepCopy(other.BValue));
+            return new BooleanNegation(BValue.DeepCopy());
         }
 
 
@@ -53,9 +53,7 @@ namespace OurGP.Nodes.Values.BooleanValues
 
 
         //! ---------- METHODS ----------
-        public override string ToString()
-        {
-            return $"!({BValue})";
-        }
+        public override string ToString() =>
+            BValue is IOperation ? $"!({BValue})" : $"!{BValue}";
     }
 }

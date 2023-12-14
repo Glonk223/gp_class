@@ -50,9 +50,9 @@ namespace OurGP.Nodes.Expressions
         }
 
         //* Copy constructor
-        public static PrintStatement DeepCopy(PrintStatement other)
+        public new PrintStatement DeepCopy()
         {
-            return new PrintStatement(Value.DeepCopy(other.Value));
+            return new PrintStatement(Value.DeepCopy());
         }
 
 

@@ -3,7 +3,7 @@ namespace OurGP.Nodes.Values.NumericValues
     public class NumericVariable : NumericValue, IVariable
     {
         internal static new readonly int minDepth = 1;
-        private static readonly int _size = 10; // TODO: _size = VarNum
+        private static readonly int _size = 10;
         private static double[] _variables;
         private int _index;
 
@@ -46,9 +46,9 @@ namespace OurGP.Nodes.Values.NumericValues
         }
 
         //* Copy constructor
-        public static NumericVariable DeepCopy(NumericVariable other)
+        public new NumericVariable DeepCopy()
         {
-            return new NumericVariable(other._index);
+            return new NumericVariable(_index);
         }
 
 

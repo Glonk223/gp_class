@@ -1,4 +1,3 @@
-using System.Reflection.Metadata.Ecma335;
 using OurGP.Nodes.Expressions;
 
 namespace OurGP.Nodes
@@ -64,10 +63,9 @@ namespace OurGP.Nodes
         }
 
         //* Copy constructor
-        public static ExpressionList DeepCopy(ExpressionList other)
+        public ExpressionList DeepCopy()
         {
-            return new ExpressionList(Expression.DeepCopy(other.Expression),
-                                      other.Expressions == null ? null : DeepCopy(other.Expressions));
+            return new ExpressionList(Expression.DeepCopy(), Expressions?.DeepCopy());
         }
         
 

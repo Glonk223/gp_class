@@ -67,9 +67,9 @@ namespace OurGP.Nodes.Expressions
         }
 
         //* Copy constructor
-        public static ScanStatement DeepCopy(ScanStatement other)
+        public new ScanStatement DeepCopy()
         {
-            return new ScanStatement(IVariable.DeepCopy(other.Variable));
+            return new ScanStatement(Variable.DeepCopy());
         }
 
 
