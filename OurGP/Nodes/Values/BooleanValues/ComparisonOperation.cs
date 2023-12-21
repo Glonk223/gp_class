@@ -102,5 +102,13 @@ namespace OurGP.Nodes.Values.BooleanValues
                 Operator.GreaterThanOrEqual => ">=",
                 _ => throw new ArgumentException($"Unknown comparison operation type: {@operator}")
             };
+
+        public override Type GetReplacementType(Node child)
+        {
+            if (child == Left || child == Right)
+                return typeof(NumericValue);
+            else
+                throw new System.ArgumentException($"Node {child} is not a child of {this}");
+        }
     }
 }

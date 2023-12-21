@@ -1,15 +1,15 @@
 ﻿using OurGP.Nodes;
 
 GP.Seed = (int)DateTime.UtcNow.Ticks;
-// GP.Seed = -1030006198;
+// GP.Seed = 1228081554;
 Console.WriteLine($"Seed: {GP.Seed}\n");
 
 
 // testGrow(4);
 // testLongGrow(1_000_000, 100);
 // testDeepCopy();
-// testMutation();
-// testCrossover();
+testMutation();
+// testCrossover(6);
 
 
 void testGrow(int d = 8)

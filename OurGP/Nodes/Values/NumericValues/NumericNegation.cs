@@ -1,3 +1,4 @@
+
 namespace OurGP.Nodes.Values.NumericValues
 {
     public class NumericNegation : NumericValue
@@ -58,6 +59,14 @@ namespace OurGP.Nodes.Values.NumericValues
             if (NValue is NumericVariable or NumericConstant)
                 return $"-{NValue}";
             return $"-({NValue})";
+        }
+
+        public override Type GetReplacementType(Node child)
+        {
+            if (child == NValue)
+                return typeof(NumericValue);
+            else
+                throw new System.ArgumentException($"Node {child} is not a child of {this}");
         }
     }
 }

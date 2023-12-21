@@ -1,3 +1,4 @@
+
 namespace OurGP.Nodes.Values.BooleanValues
 {
     public class BooleanNegation : BooleanValue
@@ -55,5 +56,13 @@ namespace OurGP.Nodes.Values.BooleanValues
         //! ---------- METHODS ----------
         public override string ToString() =>
             BValue is IOperation ? $"!({BValue})" : $"!{BValue}";
+
+        public override Type GetReplacementType(Node child)
+        {
+            if (child == BValue)
+                return typeof(BooleanValue);
+            else
+                throw new System.ArgumentException($"Node {child} is not a child of {this}");
+        }
     }
 }

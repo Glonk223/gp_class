@@ -87,5 +87,13 @@ namespace OurGP.Nodes.Values.BooleanValues
                 Operator.Or  => "||",
                 _ => throw new ArgumentException($"Unknown comparison operation type: {@operator}")
             };
+
+        public override Type GetReplacementType(Node child)
+        {
+            if (child == Left || child == Right)
+                return typeof(BooleanValue);
+            else
+                throw new System.ArgumentException($"Node {child} is not a child of {this}");
+        }
     }
 }

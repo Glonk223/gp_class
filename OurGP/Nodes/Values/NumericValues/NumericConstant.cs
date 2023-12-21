@@ -76,5 +76,10 @@ namespace OurGP.Nodes.Values.NumericValues
         {
             return $"{_constants[_index]}";
         }
+
+        public override Type GetReplacementType(Node child)
+        {
+            throw new System.ArgumentException($"Node {child} is not a child of {this}");
+        }
     }
 }

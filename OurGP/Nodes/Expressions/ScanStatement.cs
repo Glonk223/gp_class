@@ -88,5 +88,13 @@ namespace OurGP.Nodes.Expressions
         {
             return $"{indent}scan({Variable})";
         }
+
+        public override Type GetReplacementType(Node child)
+        {
+            if (child == Variable)
+                return typeof(IVariable);
+            else
+                throw new ArgumentException($"Node {child} is not a child of {this}");
+        }
     }
 }

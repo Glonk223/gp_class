@@ -1,3 +1,4 @@
+
 namespace OurGP.Nodes.Values.BooleanValues
 {
     public class BooleanVariable : BooleanValue, IVariable
@@ -71,6 +72,11 @@ namespace OurGP.Nodes.Values.BooleanValues
         public override string ToString()
         {
             return $"L{_index}";
+        }
+
+        public override Type GetReplacementType(Node child)
+        {
+            throw new System.ArgumentException($"Node {child} is not a child of {this}");
         }
     }
 }

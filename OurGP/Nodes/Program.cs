@@ -64,5 +64,10 @@ namespace OurGP.Nodes
         {
             return Expressions.ToString(indent);
         }
+
+        public override Type GetReplacementType(Node child)
+        {
+            return typeof(ExpressionList);
+        }
     }
 }

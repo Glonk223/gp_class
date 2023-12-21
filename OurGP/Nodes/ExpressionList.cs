@@ -27,7 +27,7 @@ namespace OurGP.Nodes
         //* Depth constructor
         public ExpressionList(int childrenCount, int depth, Node? parent)
             : base(childrenCount, depth, parent) { }
-        
+
         //* Parameterized constructor
         public ExpressionList(Expression expression, ExpressionList? expressions = null)
             : base(expressions != null ? 2 : 1)
@@ -40,26 +40,26 @@ namespace OurGP.Nodes
         public static new ExpressionList Grow(int maxDepth, int currentDepth = 0, Node? parent = null)
         {
             // Console.WriteLine($"ExpressionList.Grow({currentDepth}, {maxDepth})")
-            if (maxDepth-currentDepth < minDepth)
+            if (maxDepth - currentDepth < minDepth)
                 throw new System.ArgumentException(GrowErrorMessage(maxDepth, currentDepth));
-            
+
             ExpressionList node;
-            if (minDepth < maxDepth-currentDepth && 0.5 > GP.rd.NextDouble())
+            if (minDepth < maxDepth - currentDepth && 0.5 > GP.rd.NextDouble())
             {
                 node = new ExpressionList(2, currentDepth, parent);
-                node.Expression = Expression.Grow(maxDepth, currentDepth+1, node);
-                node.Expressions = ExpressionList.Grow(maxDepth, currentDepth+1, node);
+                node.Expression = Expression.Grow(maxDepth, currentDepth + 1, node);
+                node.Expressions = ExpressionList.Grow(maxDepth, currentDepth + 1, node);
             }
             else
             {
                 node = new ExpressionList(1, currentDepth, parent);
-                node.Expression = Expression.Grow(maxDepth, currentDepth+1, node);
+                node.Expression = Expression.Grow(maxDepth, currentDepth + 1, node);
             }
             return node;
         }
         static string GrowErrorMessage(int maxDepth, int currentDepth)
         {
-            return $"From node ExpressionList on depth={currentDepth}:\n\tCannot grow ExpressionList Node of depth={maxDepth-currentDepth},\n\tMinimum depth is {minDepth}";
+            return $"From node ExpressionList on depth={currentDepth}:\n\tCannot grow ExpressionList Node of depth={maxDepth - currentDepth},\n\tMinimum depth is {minDepth}";
         }
 
         //* Copy constructor
@@ -67,7 +67,7 @@ namespace OurGP.Nodes
         {
             return new ExpressionList(Expression.DeepCopy(), Expressions?.DeepCopy());
         }
-        
+
 
         //! ---------- PROPERTIES ----------
         // if _expressions is null, then consider it to py one child node and calculate only the depth of _expression then the MinDepth and MaxDepth are the same
@@ -85,6 +85,16 @@ namespace OurGP.Nodes
         public override string ToString(string indent = "")
         {
             return Expression.ToString(indent) + ("\n" + Expressions?.ToString(indent) ?? "");
+        }
+
+        public override Type GetReplacementType(Node child)
+        {
+            if (child == Expression)
+                return typeof(Expression);
+            else if (child == Expressions)
+                return typeof(ExpressionList);
+            else
+                throw new ArgumentException($"Node {child} is not a child of {this}");
         }
     }
 }

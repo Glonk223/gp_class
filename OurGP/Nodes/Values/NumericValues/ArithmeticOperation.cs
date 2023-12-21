@@ -96,5 +96,13 @@ namespace OurGP.Nodes.Values.NumericValues
                 Operator.Modulo          => "%",
                 _ => throw new ArgumentException($"Unknown arithmetic operation type: {@operator}")
             };
+
+        public override Type GetReplacementType(Node child)
+        {
+            if (child == Left || child == Right)
+                return typeof(NumericValue);
+            else
+                throw new ArgumentException($"Node {child} is not a child of {this}");
+        }
     }
 }

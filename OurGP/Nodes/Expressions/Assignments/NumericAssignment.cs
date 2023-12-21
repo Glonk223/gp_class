@@ -68,5 +68,15 @@ namespace OurGP.Nodes.Expressions.Assignments
         {
             return $"{indent}{Variable} = {Value}";
         }
+
+        public override Type GetReplacementType(Node child)
+        {
+            if (child == Variable)
+                return typeof(NumericVariable);
+            else if (child == Value)
+                return typeof(NumericValue);
+            else
+                throw new ArgumentException($"Node {child} is not a child of {this}");
+        }
     }
 }

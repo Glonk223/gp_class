@@ -1,3 +1,4 @@
+using System.Dynamic;
 using OurGP.Nodes.Expressions.Assignments;
 using OurGP.Nodes.Values;
 
@@ -86,52 +87,64 @@ namespace OurGP.Nodes
 
 
         //! ---------- METHODS ----------
-        public static void Swap(ref Node a, ref Node b)
+        private static void Swap(ref Node a, ref Node b)
         {
             var parentA = a.parent;
             var parentB = b.parent;
 
-            var indexA = Array.IndexOf(parentA?._children ?? Array.Empty<Node>(), a);
-            var indexB = Array.IndexOf(parentB?._children ?? Array.Empty<Node>(), b);
+            var indexA = Array.IndexOf(parentA!._children, a);
+            var indexB = Array.IndexOf(parentB!._children, b);
 
-            // Console.WriteLine(indexA + " " + indexB);
-
-            // Console.WriteLine("old a:\n" + a.parent);
-            // Console.WriteLine("old b:\n" + b.parent);
-            a.parent?.AssignNewChild(b, indexA);
-            // Console.WriteLine("mid a:\n" + a.parent);
-            // Console.WriteLine("mid b:\n" + b.parent);
-            parentB?.AssignNewChild(a, indexB);
-            // Console.WriteLine("new a:\n" + a.parent);
-            // Console.WriteLine("new b:\n" + b.parent);
+            a.parent!._children[indexA] = b;
+            b.parent!._children[indexB] = a;
 
             (a.parent, b.parent) = (b.parent, a.parent);
+
+            a.FixSubtreeCountBottomUp();
+            b.FixSubtreeCountBottomUp();
         }
-        public void AssignNewChild(Node newChild, int index)
+
+        private static bool AreSwapable(Node? a, Node? b)
         {
-            if (index < 0 || index >= _children.Length)
-                throw new System.ArgumentOutOfRangeException($"Index {index} is out of range [0, {_children.Length})");
+            if (a == null || b == null)
+            {
+                // Console.WriteLine("a or b is null");
+                return false;
+            }
             
-            _children[index] = newChild;
-            newChild.parent = this;
+            if (a.parent == null || b.parent == null)
+            {
+                // Console.WriteLine("a.parent or b.parent is null");
+                return false;
+            }
+
+            var parAaccepts = a.parent.GetReplacementType(a);
+            var parBaccepts = b.parent.GetReplacementType(b);
+
+            if (!b.GetType().IsSubclassOf(parAaccepts))
+            {
+                // Console.WriteLine($"{b.GetType().Name} is not subclass of {parAaccepts.Name}");
+                return false;
+            }
+
+            if (!a.GetType().IsSubclassOf(parBaccepts))
+            {
+                // Console.WriteLine($"{a.GetType().Name} is not subclass of {parBaccepts.Name}");
+                return false;
+            }
+            
+            return true;
         }
 
         public override string ToString() { return ToString(indent: ""); }
         public abstract string ToString(string indent);
 
-        /// <summary>
-        /// does not include this node (i mean root node)
-        /// </summary>
         public Node GetNodeRandom()
         {
             int index = GP.rd.Next(subtreeCount-1)+1;
             // Console.WriteLine($"GetRandomNode() => {index}");
             return GetNodeAt(index);
         }
-        // public Node GetRandomNode(Type type)
-        // {
-        //     return GetRandomNode(type.Name);
-        // }
         public Node GetNodeAt(int index)
         {
             if (index < 0 || index >= subtreeCount)
@@ -149,39 +162,71 @@ namespace OurGP.Nodes
             throw new System.ArgumentOutOfRangeException($"No Node found for index {index} in range [0, {subtreeCount})\nIt should never happen!");
         }
 
+        public List<Node> GetAllNodesOfType(Type type)
+        {
+            var nodes = new List<Node>();
+            if (GetType().IsSubclassOf(type))
+                nodes.Add(this);
+            foreach (var child in _children)
+                nodes.AddRange(child.GetAllNodesOfType(type));
+            return nodes; 
+        }
+        public Node? GetNodeOfTypeRandom(Type type)
+        {
+            var possibilities = GetAllNodesOfType(type);
+            if (possibilities.Count == 0)
+                return null;
+            return possibilities[GP.rd.Next(possibilities.Count)];
+        }
+
 
         //! ---------- GENETIC OPERATIONS ----------
         public void Mutate()
         {
             var node = GetNodeRandom();
 
-            // Console.WriteLine($"Mutating {node.GetType().Name} on depth {node.currentDepth} with subtreeCount {node.subtreeCount}, maxDepth {node.MaxDepth}, minDepth {node.MinDepth}");
-            // Console.WriteLine($"Before mutation:\n{node}");
-
             int newMaxDepth = (int)(node.MaxDepth * 1.5);
-
             var growMethod = node.GetType().GetMethod("Grow");
             if (growMethod != null)
             {
                 var newNode = growMethod.Invoke(null, new object[] { newMaxDepth + node.currentDepth, node.currentDepth, node.parent! }) as Node;
 
-                node.parent?.AssignNewChild(newNode!, Array.IndexOf(node.parent._children, node));
+                var mutationIndex = Array.IndexOf(node.parent!._children, node);
+                node.parent._children[mutationIndex] = newNode!;
+                newNode.parent = node!.parent;
+                node.parent?.FixSubtreeCountBottomUp();
             }
         }
+
         public static (Program, Program) Crossover(Program parent1, Program parent2)
         {
             var child1 = parent1.DeepCopy();
             var child2 = parent2.DeepCopy();
 
-            var node1 = child1.GetNodeRandom();
-            // get type of node 1 seen from its parent for example node can be of type NumericVariable but seen from its parent it is of type NumericValue
-            //! this is not base type but type of the node seen from its parent
-            // TODO: implement getter for replacement type in each class (the argument is child node, return is replacement type)
-            // var type1 = node1.GetReplacementType();
-            // var node2 = child2.GetNodeRandom(type1);
+            Node node1; 
+            Node? node2;
+            do
+            {
+                node1 = child1.GetNodeRandom();
+                // Console.WriteLine($"node1 type: {node1.GetType().Name}");
+                // Console.WriteLine($"node1 parent type: {node1.parent?.GetType().Name}");
 
-            // Swap(ref node1, ref node2);
+                var replacementType = node1.parent!.GetReplacementType(node1);
+                // Console.WriteLine($"replacementType: {replacementType.Name}");
+
+                node2 = child2.GetNodeOfTypeRandom(replacementType);
+                // Console.WriteLine($"node2 type: {node2?.GetType().Name}");
+                // Console.WriteLine($"node2 parent type: {node2?.parent?.GetType().Name}");
+
+                // Console.WriteLine($"AreSwapable: {Node.AreSwapable(node1, node2)}");
+                // Console.ReadKey();
+            }
+            while (!Node.AreSwapable(node1, node2));
+
+            Swap(ref node1, ref node2);
             return (child1, child2);
         }
+
+        public abstract Type GetReplacementType(Node child);
     }
 }

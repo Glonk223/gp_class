@@ -73,5 +73,15 @@ namespace OurGP.Nodes.Expressions
         {
             return $"{indent}if ({Condition}) {{\n{Expressions.ToString(indent + "  ")}{indent}}}";
         }
+
+        public override Type GetReplacementType(Node child)
+        {
+            if (child == Condition)
+                return typeof(BooleanValue);
+            else if (child == Expressions)
+                return typeof(ExpressionList);
+            else
+                throw new System.ArgumentException($"Node {child} is not a child of {this}");
+        }
     }
 }
