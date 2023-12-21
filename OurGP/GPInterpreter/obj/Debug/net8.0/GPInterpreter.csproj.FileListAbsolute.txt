@@ -1,0 +1,17 @@
+/home/johny/RiderProjects/GP/GPInterpreter/bin/Debug/net8.0/GPInterpreter
+/home/johny/RiderProjects/GP/GPInterpreter/bin/Debug/net8.0/GPInterpreter.deps.json
+/home/johny/RiderProjects/GP/GPInterpreter/bin/Debug/net8.0/GPInterpreter.runtimeconfig.json
+/home/johny/RiderProjects/GP/GPInterpreter/bin/Debug/net8.0/GPInterpreter.dll
+/home/johny/RiderProjects/GP/GPInterpreter/bin/Debug/net8.0/GPInterpreter.pdb
+/home/johny/RiderProjects/GP/GPInterpreter/obj/Debug/net8.0/GPInterpreter.GeneratedMSBuildEditorConfig.editorconfig
+/home/johny/RiderProjects/GP/GPInterpreter/obj/Debug/net8.0/GPInterpreter.AssemblyInfoInputs.cache
+/home/johny/RiderProjects/GP/GPInterpreter/obj/Debug/net8.0/GPInterpreter.AssemblyInfo.cs
+/home/johny/RiderProjects/GP/GPInterpreter/obj/Debug/net8.0/GPInterpreter.csproj.CoreCompileInputs.cache
+/home/johny/RiderProjects/GP/GPInterpreter/obj/Debug/net8.0/GPInterpreter.dll
+/home/johny/RiderProjects/GP/GPInterpreter/obj/Debug/net8.0/refint/GPInterpreter.dll
+/home/johny/RiderProjects/GP/GPInterpreter/obj/Debug/net8.0/GPInterpreter.pdb
+/home/johny/RiderProjects/GP/GPInterpreter/obj/Debug/net8.0/GPInterpreter.genruntimeconfig.cache
+/home/johny/RiderProjects/GP/GPInterpreter/obj/Debug/net8.0/ref/GPInterpreter.dll
+/home/johny/RiderProjects/GP/GPInterpreter/bin/Debug/net8.0/Antlr4.Runtime.Standard.dll
+/home/johny/RiderProjects/GP/GPInterpreter/obj/Debug/net8.0/GPInterpreter.csproj.AssemblyReference.cache
+/home/johny/RiderProjects/GP/GPInterpreter/obj/Debug/net8.0/GPInterpreter.csproj.CopyComplete
