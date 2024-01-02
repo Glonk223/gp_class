@@ -2,7 +2,7 @@ using GPInterpreter;
 using OurGP.Nodes;
 class Individual
 {
-    public Program Program;
+    public Programm Program;
     private double fitness = 1;
     // Fitness is negative, bigger (closer to 0) is better
     public double Fitness
@@ -19,11 +19,11 @@ class Individual
     //! ---------- CONSTRUCTORS ----------
     public Individual(int initialDepth)
     {
-        Program = Program.Grow(initialDepth);
+        Program = Programm.Grow(initialDepth);
         fitness = GP.fitnessFunction.Evaluate(this);
     }
 
-    public Individual(Program program)
+    public Individual(Programm program)
     {
         Program = program;
         fitness = GP.fitnessFunction.Evaluate(this);

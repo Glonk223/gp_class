@@ -1,10 +1,8 @@
-using System.Dynamic;
-using OurGP.Nodes.Expressions.Assignments;
-using OurGP.Nodes.Values;
-
 namespace OurGP.Nodes;
     public abstract class Node
     {
+        static double PICK_THIS_CHANCE = 0.4;
+
         protected static readonly int minDepth = int.MaxValue;
         protected int currentDepth;
         protected Node? parent;
@@ -136,11 +134,48 @@ namespace OurGP.Nodes;
         public override string ToString() { return ToString(indent: ""); }
         public abstract string ToString(string indent);
 
+        // public Node GetNodeRandom()
+        // {
+        //     Queue<Node> queue = new();
+        //     Queue<Node> leaves = new();
+        //     queue.Enqueue(this);
+            
+        //     while (queue.Count > 0)
+        //     {
+        //         var node = queue.Dequeue();
+
+        //         if (node.subtreeCount == 1)
+        //             leaves.Enqueue(node);
+
+        //         if (GP.rd.NextDouble() < PICK_THIS_CHANCE && node.parent != null)
+        //             return node;
+
+        //         foreach (var child in node._children)
+        //             queue.Enqueue(child);
+        //     }
+            
+        //     foreach (var leaf in leaves)
+        //     {
+        //         if (GP.rd.NextDouble() < PICK_THIS_CHANCE && leaf.parent != null)
+        //             return leaf;
+        //     }
+
+        //     Console.WriteLine("Motyla Noga 🦋🦵!!!");
+        //     return GetNodeRandom();
+        // }
+
         public Node GetNodeRandom()
         {
-            int index = GP.rd.Next(subtreeCount-1)+1;
-            // Console.WriteLine($"GetRandomNode() => {index}");
-            return GetNodeAt(index);
+            // Is leaf -> return this
+            if (subtreeCount == 1)
+                return this;
+
+            if (GP.rd.NextDouble() < PICK_THIS_CHANCE && parent != null)
+                return this;
+            return _children[GP.rd.Next(_children.Length)].GetNodeRandom();
+            // int index = GP.rd.Next(subtreeCount-1)+1;
+            // // Console.WriteLine($"GetRandomNode() => {index}");
+            // return GetNodeAt(index);
         }
         public Node GetNodeAt(int index)
         {
@@ -195,12 +230,12 @@ namespace OurGP.Nodes;
             }
         }
 
-        public static (Program, Program) Crossover(Program parent1, Program parent2)
+        public static (Programm, Programm) Crossover(Programm parent1, Programm parent2)
         {
             var child1 = parent1.DeepCopy();
             var child2 = parent2.DeepCopy();
 
-            Node node1; 
+            Node node1;
             Node? node2;
             do
             {

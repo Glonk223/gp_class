@@ -3,7 +3,7 @@ using GPInterpreter;
 
 namespace OurGP.Nodes
 {
-    public class Program : Node
+    public class Programm : Node
     {
         internal static new readonly int minDepth = 4;
         private ExpressionList Expressions
@@ -15,28 +15,28 @@ namespace OurGP.Nodes
 
         //! ---------- CONSTRUCTORS ----------
         //* Default constructor
-        public Program()
+        public Programm()
             : base(1) { }
 
         //* Depth constructor
-        public Program(int depth, Node? parent)
+        public Programm(int depth, Node? parent)
             : base(1, depth, parent) { }
 
         //* Parameterized constructor
-        public Program(ExpressionList expressions)
+        public Programm(ExpressionList expressions)
             : base(1)
         {
             Expressions = expressions;
         }
 
         //* Grow constructor
-        public static new Program Grow(int maxDepth, int currentDepth = 0, Node? parent = null)
+        public static new Programm Grow(int maxDepth, int currentDepth = 0, Node? parent = null)
         {
             // Console.WriteLine($"Program.Grow({currentDepth}, {maxDepth})");
             if (maxDepth-currentDepth < minDepth)
                 throw new System.ArgumentException(GrowErrorMessage(maxDepth, currentDepth));
             
-            var node = new Program(currentDepth, parent);
+            var node = new Programm(currentDepth, parent);
             node.Expressions = ExpressionList.Grow(maxDepth, currentDepth+1, node);
 
             node.FixSubtreeCountTopDown();
@@ -48,11 +48,18 @@ namespace OurGP.Nodes
         }
 
         //* Copy constructor
-        public Program DeepCopy()
+        public Programm DeepCopy()
         {
-            var p = new Program(Expressions.DeepCopy());
+            var p = new Programm(Expressions.DeepCopy());
             p.FixDependecies();
             return p;
+        }
+
+
+        //! ---------- DON'T PICK THIS TO MUTATE ----------
+        public new Node GetNodeRandom()
+        {
+            return _children[GP.rd.Next(_children.Length)].GetNodeRandom();
         }
 
 

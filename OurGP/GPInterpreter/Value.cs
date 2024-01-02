@@ -28,6 +28,25 @@ public class Value
             this.numVal = 0;
     }
 
+    public Value(string str)
+    {
+        if (str == "True")
+        {
+            this.boolVal = true;
+            this.numVal = 1;
+        }
+        else if (str == "False")
+        {
+            this.boolVal = false;
+            this.numVal = 0;
+        }
+        else
+        {
+            this.boolVal = false;
+            this.numVal = double.Parse(str);
+        }
+    }
+
     public double GetNum()
     {
         return numVal;

@@ -43,7 +43,7 @@
 
 // void testGrow(int d = 8)
 // {
-//     var program = OurGP.Nodes.Program.Grow(d);
+//     var program = Programm.Grow(d);
 //     Console.WriteLine(program);
 // }
 
@@ -51,12 +51,12 @@
 // {
 //     var population = new Node[n];
 //     for (int i = 0; i < n; i++)
-//         population[i] = OurGP.Nodes.Program.Grow(d);
+//         population[i] = Programm.Grow(d);
 // }
 
 // void testDeepCopy(int d = 8)
 // {
-//     var program = OurGP.Nodes.Program.Grow(d);
+//     var program = Programm.Grow(d);
 //     Console.WriteLine(program);
 //     var copy = program.DeepCopy();
 //     Console.WriteLine(copy);
@@ -64,29 +64,37 @@
 
 // void testMutation(int d = 8)
 // {
-//     var program = OurGP.Nodes.Program.Grow(d);
+//     var program = Programm.Grow(d);
 //     Console.WriteLine(program);
-//     program.Mutate();
+//     var p2 = program.DeepCopy();
+
+//     Console.WriteLine("----- Mutation -----\n");
+
+//     p2.Mutate();
 //     Console.WriteLine(program);
+//     Console.WriteLine(p2);
 // }
 
 // void testCrossover(int d = 8)
 // {
-//     var program1 = OurGP.Nodes.Program.Grow(d);
-//     var program2 = OurGP.Nodes.Program.Grow(d);
+//     var program1 = Programm.Grow(d);
+//     var program2 = Programm.Grow(d);
 //     Console.WriteLine(program1);
 //     Console.WriteLine(program2);
 
 //     Console.WriteLine("----- Crossover -----\n");
 
 //     var (c1, c2) = Node.Crossover(program1, program2);
-//     Console.WriteLine(c1);
-//     Console.WriteLine(c2);
+//     // Console.WriteLine(c1);
+//     // Console.WriteLine(c2);
+
+//     Console.WriteLine(program1);
+//     Console.WriteLine(program2);
 // }
 
 // void testRun(int d = 8)
 // {
-//     var program = OurGP.Nodes.Program.Grow(d);
+//     var program = Programm.Grow(d);
 //     Console.WriteLine(program);
 
 //     var result = program.Run(new List<Value>{new(true), new(false)});
@@ -98,7 +106,7 @@
 // void testRun2(string program)
 // {
 //     Console.WriteLine(program);
-//     OurGP.Nodes.Program p = new();
+//     Programm p = new();
 //     var result = p.Run(new List<Value>{new(true), new(false)}, 1000, program);
 //     foreach (var value in result)
 //         Console.Write($"{value.GetNum()}, ");
@@ -107,7 +115,7 @@
 
 // void testFitness1(int d = 8)
 // {
-//     var program = OurGP.Nodes.Program.Grow(d);
+//     var program = Programm.Grow(d);
 //     Console.WriteLine(program);
 
 //     var result = program.Run(new List<Value>{new(true), new(false)});
@@ -128,7 +136,7 @@
 
 // void testFitness2(int d = 8)
 // {
-//     var program = OurGP.Nodes.Program.Grow(d);
+//     var program = Programm.Grow(d);
 //     Console.WriteLine(program);
 
 //     var result = program.Run(new List<Value>{new(true), new(false)});

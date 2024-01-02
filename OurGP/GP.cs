@@ -104,7 +104,7 @@ static class GP
         statisticsOut.PrintLine(genStats);
         consoleOut.PrintLine(genStats);
         programOut.PrintLine(BestIndividual.Program.ToString());
-        programOut.PrintLine("------------------------------");
+        programOut.PrintLine(genNumber + " ------------------------------");
     }
 
     static void PrintSolution(bool foundSolution)
@@ -117,10 +117,10 @@ static class GP
 
 
     //! ---------- TOURNAMENTS ----------
-    public static int TournamentSelection(int tournamentSize=2)
+    public static int TournamentSelection()
     {
         int bestIndex = rd.Next(POPULATION_SIZE);
-        for (int i = 1; i < tournamentSize; i++)
+        for (int i = 1; i < TOURNAMENT_SIZE; i++)
         {
             int index = rd.Next(POPULATION_SIZE);
             if (population[index].Fitness > population[bestIndex].Fitness)
@@ -129,29 +129,40 @@ static class GP
         return bestIndex;
     }
 
-    public static int NegativeTournamentSelection(int tournamentSize=2)
+    public static int NegativeTournamentSelection()
     {
         int worstIndex = rd.Next(POPULATION_SIZE);
-        for (int i = 1; i < tournamentSize; i++)
+        for (int i = 1; i < TOURNAMENT_SIZE; i++)
         {
-            int index = rd.Next(POPULATION_SIZE);
-            if (population[index].Fitness < population[worstIndex].Fitness)
-                worstIndex = index;
+            // int competitor;
+            // do
+            // {
+            //     competitor = rd.Next(POPULATION_SIZE);
+            // } while (worstIndex == competitor || competitor == BestIndividualSelection);
+            int competitor = rd.Next(POPULATION_SIZE);
+
+            if (population[competitor].Fitness < population[worstIndex].Fitness)
+                worstIndex = competitor;
         }
         return worstIndex;
     }
 
     public static Individual BestIndividual
     {
+        get => population[BestIndividualSelection];
+    }
+
+    public static int BestIndividualSelection
+    {
         get
         {
-            var best = population[0];
-            foreach (var individual in population)
+            int bestIndex = 0;
+            for (int i = 1; i < POPULATION_SIZE; i++)
             {
-                if (individual.Fitness < best.Fitness)
-                    best = individual;
+                if (population[i].Fitness > population[bestIndex].Fitness)
+                    bestIndex = i;
             }
-            return best;
+            return bestIndex;
         }
     }
 
@@ -182,16 +193,16 @@ static class GP
         {
             if (rd.NextDouble() < CROSSOVER_CHANCE)
             {
-                var parent1 = population[TournamentSelection(TOURNAMENT_SIZE)];
-                var parent2 = population[TournamentSelection(TOURNAMENT_SIZE)];
-                var (child1, child2) = Program.Crossover(parent1.Program, parent2.Program);
+                var parent1 = population[TournamentSelection()];
+                var parent2 = population[TournamentSelection()];
+                var (child1, child2) = Programm.Crossover(parent1.Program, parent2.Program);
 
                 population[NegativeTournamentSelection()] = new Individual(child1);
                 population[NegativeTournamentSelection()] = new Individual(child2);
             }
             else
             {
-                var parent = population[TournamentSelection(TOURNAMENT_SIZE)];
+                var parent = population[TournamentSelection()];
 
                 var child = parent.Program.DeepCopy();
                 child.Mutate();

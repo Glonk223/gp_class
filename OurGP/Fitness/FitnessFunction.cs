@@ -4,7 +4,8 @@ namespace Fitness;
 
 class FitnessFunction
 {
-    static double _punishment = 1e6;
+    static double _punishment = 1e12;
+    static double _mult_punishment = 1e6;
     readonly bool _restrictOutputLength;
     readonly List<Target> _targets;
 
@@ -29,11 +30,11 @@ class FitnessFunction
 
             target.Inputs = new();
             foreach (var input in parts[0].Trim().Split(" "))
-                target.Inputs.Add(new(double.Parse(input)));
+                target.Inputs.Add(new(input));
             
             target.ExpectedOutputs = new();
             foreach (var output in parts[1].Trim().Split(" "))
-                target.ExpectedOutputs.Add(new(double.Parse(output)));
+                target.ExpectedOutputs.Add(new(output));
 
             _targets.Add(target);
         }
@@ -60,7 +61,7 @@ class FitnessFunction
             if (i >= output.Count)
                 res += _punishment;
             else
-                res += Math.Abs(output[i].GetNum() - expectedOutput[i].GetNum());
+                res += _mult_punishment * Math.Abs(output[i].GetNum() - expectedOutput[i].GetNum());
         }
 
         if (_restrictOutputLength)
