@@ -12,7 +12,7 @@ static class GP
     static readonly double
         CROSSOVER_CHANCE = 0.75;
 
-    static OutInterface.IOutInterface
+    static IOutInterface
         programOut,
         statisticsOut,
         consoleOut;

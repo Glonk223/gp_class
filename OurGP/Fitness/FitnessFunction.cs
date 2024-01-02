@@ -64,8 +64,7 @@ class FitnessFunction
         }
 
         if (_restrictOutputLength)
-            res += -_punishment * Math.Abs(output.Count - expectedOutput.Count);
-            
+            res += _punishment * Math.Abs(output.Count - expectedOutput.Count);
         return res;
     }
 }

@@ -60,7 +60,9 @@ public class Value
     }
     
     public static Value Modulo(Value val1, Value val2)
-    { 
+    {
+        if (Math.Abs(val2.numVal) < 0.00001)
+            return new Value(val1.numVal);
         return new Value(val1.numVal % val2.numVal);
     }
 

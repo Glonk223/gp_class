@@ -32,6 +32,7 @@
 // // testCrossover(6);
 
 // // testRun(6);
+// // testRun2("print(21 % ((-30 / 4) * X4))");
 // // testRun2(program1);
 // // testRun2(program2);
 // // testFitness1();
@@ -140,10 +141,5 @@
 //     fitness += result.Count - 1;
 
 //     Console.WriteLine("fitenss: " + fitness);
-// }
-
-// void testPopulation()
-// {
-    
 // }
 
