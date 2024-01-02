@@ -61,14 +61,6 @@ namespace OurGP.Nodes.Expressions
 
 
         //! ---------- METHODS ----------
-        public override void Run()
-        {
-            if (Condition.Value)
-            {
-                Expressions.Run();
-            }
-        }
-
         public override string ToString(string indent = "")
         {
             return $"{indent}if ({Condition}) {{\n{Expressions.ToString(indent + "  ")}{indent}}}";

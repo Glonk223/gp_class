@@ -248,4 +248,9 @@ public class GpVisitor : GramBaseVisitor<Value>
             return Value.Substract(left, right);
         }
     }
+
+    public override Value VisitParenNumVal(GramParser.ParenNumValContext context)
+    {
+        return Visit(context.numeric_value());
+    }
 }

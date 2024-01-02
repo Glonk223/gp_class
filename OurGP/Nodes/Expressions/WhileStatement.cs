@@ -60,12 +60,6 @@ namespace OurGP.Nodes.Expressions
 
 
         //! ---------- METHODS ----------
-        public override void Run()
-        {
-            while (Condition.Value)
-                Block.Run();
-        }
-
         public override string ToString(string indent = "")
         {
             return $"{indent}while ({Condition}) {{\n{Block.ToString(indent + "  ")}{indent}}}";

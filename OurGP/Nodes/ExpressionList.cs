@@ -76,12 +76,6 @@ namespace OurGP.Nodes
 
 
         //! ---------- METHODS ----------
-        public override void Run()
-        {
-            Expression.Run();
-            Expressions?.Run();
-        }
-
         public override string ToString(string indent = "")
         {
             return Expression.ToString(indent) + ("\n" + Expressions?.ToString(indent) ?? "");

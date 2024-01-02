@@ -62,11 +62,6 @@ namespace OurGP.Nodes.Expressions
 
 
         //! ---------- METHODS ----------
-        public override void Run()
-        {
-            // output.Write(_value.IOPrint());
-        }
-
         public override string ToString(string indent = "")
         {
             return $"{indent}print({Value})";

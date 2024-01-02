@@ -1,8 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "M6BDDXPAaMHfMtmGwEOUFXQFQZmSdXdQbZq5jeWn9oR5F6N5/Q762ndK9VQsUGqHjGtZWINAyYT8I+aLGIlK8g==",
+  "dgSpecHash": "Y+HZ8Ksbnx24DtsLcNrISrz7grQGPHDseZFvuySFKZoh0OZTAc5dRM7LIPj34EQiPesZBojNFMt8PT96LdAKkg==",
   "success": true,
   "projectFilePath": "/Users/jakubwadrzyk/Documents/Studia/Semestr5/Programowanie Genetyczne/gp_class/OurGP/OurGP.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "/Users/jakubwadrzyk/.nuget/packages/antlr4.runtime.standard/4.13.1/antlr4.runtime.standard.4.13.1.nupkg.sha512"
+  ],
   "logs": []
 }

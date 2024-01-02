@@ -59,11 +59,6 @@ namespace OurGP.Nodes.Expressions.Assignments
 
 
         //! ---------- METHODS ----------
-        public override void Run()
-        {
-            Variable.Assign(Value);
-        }
-
         public override string ToString(string indent = "")
         {
             return $"{indent}{Variable} = {Value}";

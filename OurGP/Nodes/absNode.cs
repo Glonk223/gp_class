@@ -2,8 +2,7 @@ using System.Dynamic;
 using OurGP.Nodes.Expressions.Assignments;
 using OurGP.Nodes.Values;
 
-namespace OurGP.Nodes
-{
+namespace OurGP.Nodes;
     public abstract class Node
     {
         protected static readonly int minDepth = int.MaxValue;
@@ -12,8 +11,6 @@ namespace OurGP.Nodes
         protected int subtreeCount = 0;
 
         protected Node[] _children;
-
-        public abstract void Run();
 
 
         //! ---------- CONSTRUCTORS ----------
@@ -193,7 +190,7 @@ namespace OurGP.Nodes
 
                 var mutationIndex = Array.IndexOf(node.parent!._children, node);
                 node.parent._children[mutationIndex] = newNode!;
-                newNode.parent = node!.parent;
+                newNode!.parent = node!.parent;
                 node.parent?.FixSubtreeCountBottomUp();
             }
         }
@@ -223,10 +220,11 @@ namespace OurGP.Nodes
             }
             while (!Node.AreSwapable(node1, node2));
 
-            Swap(ref node1, ref node2);
+
+            Swap(ref node1, ref node2!);
             return (child1, child2);
         }
 
         public abstract Type GetReplacementType(Node child);
     }
-}
+

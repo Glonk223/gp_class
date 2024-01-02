@@ -55,7 +55,6 @@ namespace OurGP.Nodes.Values
 
 
         //! ---------- METHODS ----------
-        public override void Run() { }
         public override string ToString(string indent = "")
         {
             return ToString(indent: "");

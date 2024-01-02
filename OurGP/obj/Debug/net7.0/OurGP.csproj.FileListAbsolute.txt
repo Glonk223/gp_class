@@ -28,3 +28,5 @@
 /Users/jakubwadrzyk/Documents/Studia/Semestr5/Programowanie Genetyczne/gp_class/OurGP/obj/Debug/net7.0/OurGP.pdb
 /Users/jakubwadrzyk/Documents/Studia/Semestr5/Programowanie Genetyczne/gp_class/OurGP/obj/Debug/net7.0/OurGP.genruntimeconfig.cache
 /Users/jakubwadrzyk/Documents/Studia/Semestr5/Programowanie Genetyczne/gp_class/OurGP/obj/Debug/net7.0/ref/OurGP.dll
+/Users/jakubwadrzyk/Documents/Studia/Semestr5/Programowanie Genetyczne/gp_class/OurGP/bin/Debug/net7.0/Antlr4.Runtime.Standard.dll
+/Users/jakubwadrzyk/Documents/Studia/Semestr5/Programowanie Genetyczne/gp_class/OurGP/obj/Debug/net7.0/OurGP.csproj.CopyComplete

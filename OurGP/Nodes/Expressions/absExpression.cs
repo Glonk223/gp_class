@@ -60,8 +60,5 @@ namespace OurGP.Nodes.Expressions
                 _ => throw new System.ArgumentException($"Cannot copy Expression of type {GetType().Name}")
             };
         }
-
-
-        // TODO: public abstract void Run();
     }
 }

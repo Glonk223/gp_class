@@ -1,3 +1,6 @@
+using Antlr4.Runtime;
+using GPInterpreter;
+
 namespace OurGP.Nodes
 {
     public class Program : Node
@@ -11,6 +14,10 @@ namespace OurGP.Nodes
 
 
         //! ---------- CONSTRUCTORS ----------
+        //* Default constructor
+        public Program()
+            : base(1) { }
+
         //* Depth constructor
         public Program(int depth, Node? parent)
             : base(1, depth, parent) { }
@@ -55,10 +62,18 @@ namespace OurGP.Nodes
 
 
         //! ---------- METHODS ----------
-        public override void Run()
+        public List<Value> Run(List<Value> input, int maxSteps = 1000, string? program = null)
         {
-            Expressions.Run();
+            AntlrInputStream inputStream = new(program ?? this.ToString());
+            GramLexer gramLexer = new(inputStream);
+            CommonTokenStream commonTokenStream = new(gramLexer);
+            GramParser gramParser = new(commonTokenStream);
+
+            GramParser.ProgramContext progContext = gramParser.program();
+            GpVisitor visitor = new(input, maxSteps);
+            return visitor.ourVisit(progContext);
         }
+
 
         public override string ToString(string indent = "")
         {

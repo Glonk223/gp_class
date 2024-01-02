@@ -79,11 +79,6 @@ namespace OurGP.Nodes.Expressions
 
 
         //! ---------- METHODS ----------
-        public override void Run()
-        {
-            // input.Read(_value.IOPrint());
-        }
-
         public override string ToString(string indent = "")
         {
             return $"{indent}scan({Variable})";
