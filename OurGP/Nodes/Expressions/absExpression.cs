@@ -4,15 +4,16 @@ namespace OurGP.Nodes.Expressions
 {
     public abstract class Expression : Node
     {
-        static readonly Dictionary<string, int> possibleTransformations = new(){
-            ["Assignment"]     = Assignment.minDepth,
-            ["IfStatement"]    = IfStatement.minDepth,
-            ["WhileStatement"] = WhileStatement.minDepth,
-            ["PrintStatement"] = PrintStatement.minDepth,
-            ["ScanStatement"]  = ScanStatement.minDepth,
+        static readonly Dictionary<string, (int, int)> possibleTransformations = new(){
+            ["Assignment"]     = (    Assignment.minDepthToLeaf,     Assignment.maxDepthToLeaf),
+            ["IfStatement"]    = (   IfStatement.minDepthToLeaf,    IfStatement.maxDepthToLeaf),
+            ["WhileStatement"] = (WhileStatement.minDepthToLeaf, WhileStatement.maxDepthToLeaf),
+            ["PrintStatement"] = (PrintStatement.minDepthToLeaf, PrintStatement.maxDepthToLeaf),
+            ["ScanStatement"]  = ( ScanStatement.minDepthToLeaf,  ScanStatement.maxDepthToLeaf),
         };
 
-        internal static new readonly int minDepth = possibleTransformations.Values.Min();
+        internal static new readonly int minDepthToLeaf = possibleTransformations.Values.Min(x => x.Item1);
+        internal static new readonly int maxDepthToLeaf = possibleTransformations.Values.Max(x => x.Item2);
 
 
         //! ---------- CONSTRUCTORS ----------
@@ -21,30 +22,36 @@ namespace OurGP.Nodes.Expressions
             : base(childrenCount, depth, parent) { }
 
         //* Grow constructor
-        public static new Expression Grow(int maxDepth, int currentDepth = 0, Node? parent = null)
+        public static new Expression Grow(int maxDepth, int minDepth = 0, int currentDepth = 0, Node? parent = null)
         {
+            int requiredMaxDepth = maxDepth - currentDepth;
+            int requiredMinDepth = minDepth - currentDepth;
+
             // Console.WriteLine($"Expression.Grow({currentDepth}, {maxDepth})");
-            if (maxDepth - currentDepth < minDepth)
+            if (requiredMaxDepth < minDepthToLeaf)
                 throw new System.ArgumentException(GrowErrorMessage(maxDepth, currentDepth));
 
-            return GetTransformationType(maxDepth - currentDepth) switch
+            return GetTransformationType(requiredMaxDepth, requiredMinDepth) switch
             {
-                "Assignment"     =>     Assignment.Grow(maxDepth, currentDepth, parent),
-                "IfStatement"    =>    IfStatement.Grow(maxDepth, currentDepth, parent),
-                "WhileStatement" => WhileStatement.Grow(maxDepth, currentDepth, parent),
-                "PrintStatement" => PrintStatement.Grow(maxDepth, currentDepth, parent),
-                "ScanStatement"  =>  ScanStatement.Grow(maxDepth, currentDepth, parent),
+                "Assignment"     =>     Assignment.Grow(maxDepth, minDepth, currentDepth, parent),
+                "IfStatement"    =>    IfStatement.Grow(maxDepth, minDepth, currentDepth, parent),
+                "WhileStatement" => WhileStatement.Grow(maxDepth, minDepth, currentDepth, parent),
+                "PrintStatement" => PrintStatement.Grow(maxDepth, minDepth, currentDepth, parent),
+                "ScanStatement"  =>  ScanStatement.Grow(maxDepth, minDepth, currentDepth, parent),
                 _ => throw new System.ArgumentException(GrowErrorMessage(maxDepth, currentDepth))
             };
         }
-        static string GetTransformationType(int requiredDepth)
+        static string GetTransformationType(int requiredMaxDepth, int requiredMinDepth)
         {
-            var possibleTransformationsFiltered = possibleTransformations.Where(x => x.Value <= requiredDepth).ToDictionary(x => x.Key, x => x.Value).Keys.ToList();
-            return possibleTransformationsFiltered[GP.rd.Next(possibleTransformationsFiltered.Count)];
+            var psFiltered = possibleTransformations
+                .Where(x => x.Value.Item1 <= requiredMaxDepth && x.Value.Item2 >= requiredMinDepth)
+                .ToDictionary(x => x.Key, x => x.Value).Keys.ToList();
+            
+            return psFiltered[GP.rd.Next(psFiltered.Count)];
         }
         static string GrowErrorMessage(int maxDepth, int currentDepth)
         {
-            return $"From node Expression on depth={currentDepth}:\n\tCannot grow Expression Node of depth={maxDepth - currentDepth},\n\tMinimum depth is {minDepth}";
+            return $"From node Expression on depth={currentDepth}:\n\tCannot grow Expression Node of depth={maxDepth - currentDepth},\n\tMinimum depth is {minDepthToLeaf}";
         }
 
         //* Copy constructor

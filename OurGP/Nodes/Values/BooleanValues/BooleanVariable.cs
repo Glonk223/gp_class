@@ -3,7 +3,8 @@ namespace OurGP.Nodes.Values.BooleanValues
 {
     public class BooleanVariable : BooleanValue, IVariable
     {
-        internal static new readonly int minDepth = 1;
+        internal static new readonly int minDepthToLeaf = 1;
+        internal static new readonly int maxDepthToLeaf = 1;
         private static readonly int _size = 10;
         private static bool[] _variables;
         private int _index;
@@ -30,10 +31,10 @@ namespace OurGP.Nodes.Values.BooleanValues
         }
 
         //* Grow constructor
-        public static new BooleanVariable Grow(int maxDepth, int currentDepth = 0, Node? parent = null)
+        public static new BooleanVariable Grow(int maxDepth, int minDepth = 0, int currentDepth = 0, Node? parent = null)
         {
             // Console.WriteLine($"BooleanVariable.Grow({currentDepth}, {maxDepth})");
-            if (maxDepth - currentDepth < minDepth)
+            if (maxDepth - currentDepth < minDepthToLeaf)
                 throw new System.ArgumentException(GrowErrorMessage(maxDepth, currentDepth));
             
             return new BooleanVariable(currentDepth, parent)
@@ -43,7 +44,7 @@ namespace OurGP.Nodes.Values.BooleanValues
         }
         static string GrowErrorMessage(int maxDepth, int currentDepth)
         {
-            return $"From node BooleanVariable on depth={currentDepth}:\n\tCannot grow BooleanVariable Node of depth={maxDepth - currentDepth},\n\tMinimum depth is {minDepth}";
+            return $"From node BooleanVariable on depth={currentDepth}:\n\tCannot grow BooleanVariable Node of depth={maxDepth - currentDepth},\n\tMinimum depth is {minDepthToLeaf}";
         }
 
         //* Copy constructor

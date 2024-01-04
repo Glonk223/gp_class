@@ -4,7 +4,8 @@ namespace OurGP.Nodes.Expressions
 {
     public class PrintStatement : Expression
     {
-        internal static new readonly int minDepth = 2;
+        internal static new readonly int minDepthToLeaf = 2;
+        internal static new readonly int maxDepthToLeaf = int.MaxValue;
         private Value Value
         {
             get => (Value)_children[0];
@@ -34,19 +35,19 @@ namespace OurGP.Nodes.Expressions
         }
 
         //* Grow constructor
-        public static new PrintStatement Grow(int maxDepth, int currentDepth = 0, Node? parent = null)
+        public static new PrintStatement Grow(int maxDepth, int minDepth = 0, int currentDepth = 0, Node? parent = null)
         {
             // Console.WriteLine($"PrintStatement.Grow({currentDepth}, {maxDepth})");
-            if (maxDepth - currentDepth < minDepth)
+            if (maxDepth - currentDepth < minDepthToLeaf)
                 throw new System.ArgumentException(GrowErrorMessage(maxDepth, currentDepth));
 
             var node = new PrintStatement(currentDepth, parent);
-            node.Value = Value.Grow(maxDepth, currentDepth + 1, node);
+            node.Value = Value.Grow(maxDepth, minDepth, currentDepth + 1, node);
             return node;
         }
         static string GrowErrorMessage(int maxDepth, int currentDepth)
         {
-            return $"From node PrintStatement on depth={currentDepth}:\n\tCannot grow PrintStatement Node of depth={maxDepth - currentDepth},\n\tMinimum depth is {minDepth}";
+            return $"From node PrintStatement on depth={currentDepth}:\n\tCannot grow PrintStatement Node of depth={maxDepth - currentDepth},\n\tMinimum depth is {minDepthToLeaf}";
         }
 
         //* Copy constructor

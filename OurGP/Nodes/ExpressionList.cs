@@ -4,7 +4,8 @@ namespace OurGP.Nodes
 {
     public class ExpressionList : Node
     {
-        internal static new readonly int minDepth = 3;
+        internal static new readonly int minDepthToLeaf = 3;
+        internal static new readonly int maxDepthToLeaf = int.MaxValue;
         private Expression Expression
         {
             get => (Expression)_children[0];
@@ -37,29 +38,29 @@ namespace OurGP.Nodes
         }
 
         //* Grow constructor
-        public static new ExpressionList Grow(int maxDepth, int currentDepth = 0, Node? parent = null)
+        public static new ExpressionList Grow(int maxDepth, int minDepth = 0, int currentDepth = 0, Node? parent = null)
         {
             // Console.WriteLine($"ExpressionList.Grow({currentDepth}, {maxDepth})")
-            if (maxDepth - currentDepth < minDepth)
+            if (maxDepth - currentDepth < minDepthToLeaf)
                 throw new System.ArgumentException(GrowErrorMessage(maxDepth, currentDepth));
 
             ExpressionList node;
-            if (minDepth < maxDepth - currentDepth && 0.5 > GP.rd.NextDouble())
+            if (minDepthToLeaf < maxDepth - currentDepth && 0.5 > GP.rd.NextDouble())
             {
                 node = new ExpressionList(2, currentDepth, parent);
-                node.Expression = Expression.Grow(maxDepth, currentDepth + 1, node);
-                node.Expressions = ExpressionList.Grow(maxDepth, currentDepth + 1, node);
+                node.Expression = Expression.Grow(maxDepth, minDepth, currentDepth + 1, node);
+                node.Expressions = ExpressionList.Grow(maxDepth, minDepth, currentDepth + 1, node);
             }
             else
             {
                 node = new ExpressionList(1, currentDepth, parent);
-                node.Expression = Expression.Grow(maxDepth, currentDepth + 1, node);
+                node.Expression = Expression.Grow(maxDepth, minDepth, currentDepth + 1, node);
             }
             return node;
         }
         static string GrowErrorMessage(int maxDepth, int currentDepth)
         {
-            return $"From node ExpressionList on depth={currentDepth}:\n\tCannot grow ExpressionList Node of depth={maxDepth - currentDepth},\n\tMinimum depth is {minDepth}";
+            return $"From node ExpressionList on depth={currentDepth}:\n\tCannot grow ExpressionList Node of depth={maxDepth - currentDepth},\n\tMinimum depth is {minDepthToLeaf}";
         }
 
         //* Copy constructor

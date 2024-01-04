@@ -3,7 +3,8 @@ namespace OurGP.Nodes;
     {
         static double PICK_THIS_CHANCE = 0.4;
 
-        protected static readonly int minDepth = int.MaxValue;
+        protected static readonly int minDepthToLeaf = int.MaxValue;
+        protected static readonly int maxDepthToLeaf = int.MaxValue;
         protected int currentDepth;
         protected Node? parent;
         protected int subtreeCount = 0;
@@ -21,7 +22,7 @@ namespace OurGP.Nodes;
         }
 
         //* Grow constructor
-        public static Node Grow(int maxDepth, int currentDepth = 0, Node? parent = null)
+        public static Node Grow(int maxDepth, int minDepth = 0, int currentDepth = 0, Node? parent = null)
         {
             throw new NotImplementedException("Not implemented and it'll newer be.\nHow you would expect it to work on an abstract Node pall?!\n💀💀💀");
         }
@@ -217,11 +218,12 @@ namespace OurGP.Nodes;
         {
             var node = GetNodeRandom();
 
-            int newMaxDepth = (int)(node.MaxDepth * 1.5);
+            int newMaxDepth = (int)(node.MaxDepth * 1.5) + node.currentDepth;
+            int newMinDepth = (int)(node.MaxDepth * 0.5) + node.currentDepth;
             var growMethod = node.GetType().GetMethod("Grow");
             if (growMethod != null)
             {
-                var newNode = growMethod.Invoke(null, new object[] { newMaxDepth + node.currentDepth, node.currentDepth, node.parent! }) as Node;
+                var newNode = growMethod.Invoke(null, new object[] { newMaxDepth, newMinDepth, node.currentDepth, node.parent! }) as Node;
 
                 var mutationIndex = Array.IndexOf(node.parent!._children, node);
                 node.parent._children[mutationIndex] = newNode!;

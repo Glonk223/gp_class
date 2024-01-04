@@ -2,14 +2,15 @@ namespace OurGP.Nodes.Values.NumericValues
 {
     public abstract class NumericValue : Value
     {
-        static readonly Dictionary<string, int> possibleTransformations = new(){
-            ["ArithmeticOperation"] = ArithmeticOperation.minDepth,
-            ["NumericConstant"] = NumericConstant.minDepth,
-            ["NumericNegation"] = NumericNegation.minDepth,
-            ["NumericVariable"] = NumericVariable.minDepth,
+        static readonly Dictionary<string, (int, int)> possibleTransformations = new(){
+            ["ArithmeticOperation"] = (ArithmeticOperation.minDepthToLeaf, ArithmeticOperation.maxDepthToLeaf),
+            ["NumericConstant"]     = (    NumericConstant.minDepthToLeaf,     NumericConstant.maxDepthToLeaf),
+            ["NumericNegation"]     = (    NumericNegation.minDepthToLeaf,     NumericNegation.maxDepthToLeaf),
+            ["NumericVariable"]     = (    NumericVariable.minDepthToLeaf,     NumericVariable.maxDepthToLeaf),
         };
 
-        internal static new readonly int minDepth = possibleTransformations.Values.Min();
+        internal static new readonly int minDepthToLeaf = possibleTransformations.Values.Min(x => x.Item1);
+        internal static new readonly int maxDepthToLeaf = possibleTransformations.Values.Max(x => x.Item2);
 
 
         //! ---------- CONSTRUCTORS ----------
@@ -18,28 +19,29 @@ namespace OurGP.Nodes.Values.NumericValues
             : base(childrenCount, depth, parent) { }
 
         //* Grow constructor
-        public static new NumericValue Grow(int maxDepth, int currentDepth = 0, Node? parent = null)
+        public static new NumericValue Grow(int maxDepth, int minDepth = 0, int currentDepth = 0, Node? parent = null)
         {
+            int requiredMaxDepth = maxDepth - currentDepth;
+            int requiredMinDepth = minDepth - currentDepth;
+
             // Console.WriteLine($"NumericValue.Grow({currentDepth}, {maxDepth})");
-            if (maxDepth-currentDepth < minDepth)
+            if (requiredMaxDepth < minDepthToLeaf)
                 throw new System.ArgumentException(GrowErrorMessage(maxDepth, currentDepth));
 
-            return GetTransformationType(maxDepth-currentDepth, parent) switch
+            return GetTransformationType(requiredMaxDepth, requiredMinDepth, parent) switch
             {
-                "ArithmeticOperation" => ArithmeticOperation.Grow(maxDepth, currentDepth, parent),
-                "NumericConstant"     =>     NumericConstant.Grow(maxDepth, currentDepth, parent),
-                "NumericNegation"     =>     NumericNegation.Grow(maxDepth, currentDepth, parent),
-                "NumericVariable"     =>     NumericVariable.Grow(maxDepth, currentDepth, parent),
+                "ArithmeticOperation" => ArithmeticOperation.Grow(maxDepth, minDepth, currentDepth, parent),
+                "NumericConstant"     =>     NumericConstant.Grow(maxDepth, minDepth, currentDepth, parent),
+                "NumericNegation"     =>     NumericNegation.Grow(maxDepth, minDepth, currentDepth, parent),
+                "NumericVariable"     =>     NumericVariable.Grow(maxDepth, minDepth, currentDepth, parent),
                 _ => throw new System.ArgumentException(GrowErrorMessage(maxDepth, currentDepth))
             };
         }
-        static string GetTransformationType(int requiredDepth, Node? parent = null)
+        static string GetTransformationType(int requiredMaxDepth, int requiredMinDepth, Node? parent = null)
         {
-            var ptFiltered =
-                possibleTransformations
-                    .Where(x => x.Value <= requiredDepth)
-                    .ToDictionary(x => x.Key, x => x.Value)
-                    .Keys.ToList();
+            var ptFiltered = possibleTransformations
+                .Where(x => x.Value.Item1 <= requiredMaxDepth && x.Value.Item2 >= requiredMinDepth)
+                .ToDictionary(x => x.Key, x => x.Value).Keys.ToList();
 
             if (parent is not NumericNegation)
                 return ptFiltered[GP.rd.Next(ptFiltered.Count)];
@@ -47,7 +49,7 @@ namespace OurGP.Nodes.Values.NumericValues
         }
         static string GrowErrorMessage(int maxDepth, int currentDepth)
         {
-            return $"From node NumericValue on depth={currentDepth}:\n\tCannot grow NumericValue Node of depth={maxDepth - currentDepth},\n\tMinimum depth is {minDepth}";
+            return $"From node NumericValue on depth={currentDepth}:\n\tCannot grow NumericValue Node of depth={maxDepth - currentDepth},\n\tMinimum depth is {minDepthToLeaf}";
         }
 
         //* Copy constructor

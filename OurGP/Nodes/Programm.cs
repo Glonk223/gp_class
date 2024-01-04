@@ -5,7 +5,8 @@ namespace OurGP.Nodes
 {
     public class Programm : Node
     {
-        internal static new readonly int minDepth = 4;
+        internal static new readonly int minDepthToLeaf = 4;
+        internal static new readonly int maxDepthToLeaf = int.MaxValue;
         private ExpressionList Expressions
         {
             get => (ExpressionList)_children[0];
@@ -30,21 +31,26 @@ namespace OurGP.Nodes
         }
 
         //* Grow constructor
-        public static new Programm Grow(int maxDepth, int currentDepth = 0, Node? parent = null)
+        public static new Programm Grow(int maxDepth, int minDepth = 0, int currentDepth = 0, Node? parent = null)
         {
             // Console.WriteLine($"Program.Grow({currentDepth}, {maxDepth})");
-            if (maxDepth-currentDepth < minDepth)
+            if (maxDepth-currentDepth < minDepthToLeaf)
                 throw new System.ArgumentException(GrowErrorMessage(maxDepth, currentDepth));
             
             var node = new Programm(currentDepth, parent);
-            node.Expressions = ExpressionList.Grow(maxDepth, currentDepth+1, node);
+            node.Expressions = ExpressionList.Grow(maxDepth, minDepth, currentDepth+1, node);
 
             node.FixSubtreeCountTopDown();
             return node;
         }
+        public static Programm GrowFull(int maxDepth)
+        {
+            return Grow(maxDepth, maxDepth, 0, null);
+        }
+
         static string GrowErrorMessage(int maxDepth, int currentDepth)
         {
-            return $"From node Program on depth={currentDepth}:\n\tCannot grow Program Node of depth={maxDepth-currentDepth},\n\tMinimum depth is {minDepth}";
+            return $"From node Program on depth={currentDepth}:\n\tCannot grow Program Node of depth={maxDepth-currentDepth},\n\tMinimum depth is {minDepthToLeaf}";
         }
 
         //* Copy constructor

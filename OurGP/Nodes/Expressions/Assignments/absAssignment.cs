@@ -2,12 +2,13 @@ namespace OurGP.Nodes.Expressions.Assignments
 {
     public abstract class Assignment : Expression
     {
-        static readonly Dictionary<string, int> possibleTransformations = new(){
-            ["BooleanAssignment"] = BooleanAssignment.minDepth,
-            ["NumericAssignment"] = NumericAssignment.minDepth,
+        static readonly Dictionary<string, (int, int)> possibleTransformations = new(){
+            ["BooleanAssignment"] = (BooleanAssignment.minDepthToLeaf, BooleanAssignment.maxDepthToLeaf),
+            ["NumericAssignment"] = (NumericAssignment.minDepthToLeaf, NumericAssignment.maxDepthToLeaf),
         };
 
-        internal static new readonly int minDepth = possibleTransformations.Values.Min();
+        internal static new readonly int minDepthToLeaf = possibleTransformations.Values.Min(x => x.Item1);
+        internal static new readonly int maxDepthToLeaf = possibleTransformations.Values.Max(x => x.Item2);
 
 
         //! ---------- CONSTRUCTORS ----------
@@ -16,26 +17,33 @@ namespace OurGP.Nodes.Expressions.Assignments
             : base(2, depth, parent) { }
 
         //* Grow constructor
-        public static new Assignment Grow(int maxDepth, int currentDepth = 0, Node? parent = null)
+        public static new Assignment Grow(int maxDepth, int minDepth = 0, int currentDepth = 0, Node? parent = null)
         {
+            int requiredMaxDepth = maxDepth - currentDepth;
+            int requiredMinDepth = minDepth - currentDepth;
+
             // Console.WriteLine($"Assignment.Grow({currentDepth}, {maxDepth})");
-            if (maxDepth - currentDepth < minDepth)
+            if (requiredMaxDepth < minDepthToLeaf)
                 throw new System.ArgumentException(GrowErrorMessage(maxDepth, currentDepth));
 
-            return GetTransformationType(maxDepth - currentDepth) switch
+            return GetTransformationType(requiredMaxDepth, requiredMinDepth) switch
             {
-                "BooleanAssignment" => BooleanAssignment.Grow(maxDepth, currentDepth, parent),
-                "NumericAssignment" => NumericAssignment.Grow(maxDepth, currentDepth, parent),
+                "BooleanAssignment" => BooleanAssignment.Grow(maxDepth, minDepth, currentDepth, parent),
+                "NumericAssignment" => NumericAssignment.Grow(maxDepth, minDepth, currentDepth, parent),
                 _ => throw new System.ArgumentException(GrowErrorMessage(maxDepth, currentDepth))
             };
         }
-        static string GetTransformationType(int requiredDepth)
+        static string GetTransformationType(int requiredMaxDepth, int requiredMinDepth)
         {
-            return possibleTransformations.Keys.ToList()[GP.rd.Next(possibleTransformations.Count)];
+            var ptFiltered = possibleTransformations
+                .Where(x => x.Value.Item1 <= requiredMaxDepth && x.Value.Item2 >= requiredMinDepth)
+                .ToDictionary(x => x.Key, x => x.Value).Keys.ToList();
+            
+            return ptFiltered[GP.rd.Next(ptFiltered.Count)];
         }
         static string GrowErrorMessage(int maxDepth, int currentDepth)
         {
-            return $"From node Assignment on depth={currentDepth}:\n\tCannot grow Assignment Node of depth={maxDepth - currentDepth},\n\tMinimum depth is {minDepth}";
+            return $"From node Assignment on depth={currentDepth}:\n\tCannot grow Assignment Node of depth={maxDepth - currentDepth},\n\tMinimum depth is {minDepthToLeaf}";
         }
     
         //* Copy constructor

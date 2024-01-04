@@ -2,7 +2,8 @@ namespace OurGP.Nodes.Values.NumericValues
 {
     public class NumericVariable : NumericValue, IVariable
     {
-        internal static new readonly int minDepth = 1;
+        internal static new readonly int minDepthToLeaf = 1;
+        internal static new readonly int maxDepthToLeaf = 1;
         private static readonly int _size = 10;
         private static double[] _variables;
         private int _index;
@@ -29,10 +30,10 @@ namespace OurGP.Nodes.Values.NumericValues
         }
 
         //* Grow constructor
-        public static new NumericVariable Grow(int maxDepth, int currentDepth = 0, Node? parent = null)
+        public static new NumericVariable Grow(int maxDepth, int minDepth = 0, int currentDepth = 0, Node? parent = null)
         {
             // Console.WriteLine($"NumericVariable.Grow({currentDepth}, {maxDepth})");
-            if (maxDepth - currentDepth < minDepth)
+            if (maxDepth - currentDepth < minDepthToLeaf)
                 throw new System.ArgumentException(GrowErrorMessage(maxDepth, currentDepth));
 
             return new NumericVariable(currentDepth, parent)
@@ -42,7 +43,7 @@ namespace OurGP.Nodes.Values.NumericValues
         }
         static string GrowErrorMessage(int maxDepth, int currentDepth)
         {
-            return $"From node NumericVariable on depth={currentDepth}:\n\tCannot grow NumericVariable Node of depth={maxDepth - currentDepth},\n\tMinimum depth is {minDepth}";
+            return $"From node NumericVariable on depth={currentDepth}:\n\tCannot grow NumericVariable Node of depth={maxDepth - currentDepth},\n\tMinimum depth is {minDepthToLeaf}";
         }
 
         //* Copy constructor

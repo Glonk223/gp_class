@@ -5,12 +5,13 @@ namespace OurGP.Nodes.Values
 {
     public abstract class Value : Node
     {
-        static readonly Dictionary<string, int> possibleTransformations = new(){
-            ["BooleanValue"] = BooleanValue.minDepth,
-            ["NumericValue"] = NumericValue.minDepth,
+        static readonly Dictionary<string, (int, int)> possibleTransformations = new(){
+            ["BooleanValue"] = (BooleanValue.minDepthToLeaf, BooleanValue.maxDepthToLeaf),
+            ["NumericValue"] = (NumericValue.minDepthToLeaf, NumericValue.maxDepthToLeaf),
         };
 
-        internal static new readonly int minDepth = possibleTransformations.Values.Min();
+        internal static new readonly int minDepthToLeaf = possibleTransformations.Values.Min(x => x.Item1);
+        internal static new readonly int maxDepthToLeaf = possibleTransformations.Values.Max(x => x.Item2);
 
 
         //! ---------- CONSTRUCTORS ----------
@@ -19,27 +20,33 @@ namespace OurGP.Nodes.Values
             : base(childrenCount, depth, parent) { }
 
         //* Grow constructor
-        public static new Value Grow(int maxDepth, int currentDepth = 0, Node? parent = null)
+        public static new Value Grow(int maxDepth, int minDepth = 0, int currentDepth = 0, Node? parent = null)
         {
+            int requiredMaxDepth = maxDepth - currentDepth;
+            int requiredMinDepth = minDepth - currentDepth;
+
             // Console.WriteLine($"Value.Grow({currentDepth}, {maxDepth})");
-            if (maxDepth - currentDepth < minDepth)
+            if (requiredMaxDepth < minDepthToLeaf)
                 throw new System.ArgumentException(GrowErrorMessage(maxDepth, currentDepth));
             
-            return GetTransformationType(maxDepth - currentDepth) switch
+            return GetTransformationType(requiredMaxDepth, requiredMinDepth) switch
             {
-                "BooleanValue" => BooleanValue.Grow(maxDepth, currentDepth, parent),
-                "NumericValue" => NumericValue.Grow(maxDepth, currentDepth, parent),
+                "BooleanValue" => BooleanValue.Grow(maxDepth, minDepth, currentDepth, parent),
+                "NumericValue" => NumericValue.Grow(maxDepth, minDepth, currentDepth, parent),
                 _ => throw new System.ArgumentException(GrowErrorMessage(maxDepth, currentDepth))
             };
         }
-        static string GetTransformationType(int requiredDepth)
+        static string GetTransformationType(int requiredMaxDepth, int requiredMinDepth)
         {
-            var possibleTransformationsFiltered = possibleTransformations.Where(x => x.Value <= requiredDepth).ToDictionary(x => x.Key, x => x.Value).Keys.ToList();
-            return possibleTransformationsFiltered[GP.rd.Next(possibleTransformationsFiltered.Count)];
+            var ptFiltered = possibleTransformations
+                .Where(x => x.Value.Item1 <= requiredMaxDepth && x.Value.Item2 >= requiredMinDepth)
+                .ToDictionary(x => x.Key, x => x.Value).Keys.ToList();
+
+            return ptFiltered[GP.rd.Next(ptFiltered.Count)];
         }
         static string GrowErrorMessage(int maxDepth, int currentDepth)
         {
-            return $"From node Value on depth={currentDepth}:\n\tCannot grow NumericValue Node of depth={maxDepth - currentDepth},\n\tMinimum depth is {minDepth}";
+            return $"From node Value on depth={currentDepth}:\n\tCannot grow NumericValue Node of depth={maxDepth - currentDepth},\n\tMinimum depth is {minDepthToLeaf}";
         }
 
         //* Copy constructor

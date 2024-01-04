@@ -7,11 +7,12 @@ namespace OurGP.Nodes.Expressions
     public class ScanStatement : Expression
     {
         static readonly Dictionary<string, int> possibleTransformations = new(){
-            ["BooleanVariable"] = BooleanVariable.minDepth,
-            ["NumericVariable"] = NumericVariable.minDepth,
+            ["BooleanVariable"] = BooleanVariable.minDepthToLeaf,
+            ["NumericVariable"] = NumericVariable.minDepthToLeaf,
         };
 
-        internal static new readonly int minDepth = 2;
+        internal static new readonly int minDepthToLeaf = 2;
+        internal static new readonly int maxDepthToLeaf = 2;
         private IVariable Variable
         {
             get => (IVariable)_children[0];
@@ -41,17 +42,17 @@ namespace OurGP.Nodes.Expressions
         }
 
         //* Grow constructor
-        public static new ScanStatement Grow(int maxDepth, int currentDepth = 0, Node? parent = null)
+        public static new ScanStatement Grow(int maxDepth, int minDepth = 0, int currentDepth = 0, Node? parent = null)
         {
             // Console.WriteLine($"ScanStatement.Grow({currentDepth}, {maxDepth})");
-            if (maxDepth - currentDepth < minDepth)
+            if (maxDepth - currentDepth < minDepthToLeaf)
                 throw new System.ArgumentException(GrowErrorMessage(maxDepth, currentDepth));
 
             var node = new ScanStatement(currentDepth, parent);
             node.Variable = GetTransformationType(maxDepth - currentDepth) switch
             {
-                "BooleanVariable" => BooleanVariable.Grow(maxDepth, currentDepth + 1, node),
-                "NumericVariable" => NumericVariable.Grow(maxDepth, currentDepth + 1, node),
+                "BooleanVariable" => BooleanVariable.Grow(maxDepth, minDepth, currentDepth + 1, node),
+                "NumericVariable" => NumericVariable.Grow(maxDepth, minDepth, currentDepth + 1, node),
                 _ => throw new System.ArgumentException(GrowErrorMessage(maxDepth, currentDepth))
             };
 
@@ -63,7 +64,7 @@ namespace OurGP.Nodes.Expressions
         }
         static string GrowErrorMessage(int maxDepth, int currentDepth)
         {
-            return $"From node ScanStatement on depth={currentDepth}:\n\tCannot grow ScanStatement Node of depth={maxDepth - currentDepth},\n\tMinimum depth is {minDepth}";
+            return $"From node ScanStatement on depth={currentDepth}:\n\tCannot grow ScanStatement Node of depth={maxDepth - currentDepth},\n\tMinimum depth is {minDepthToLeaf}";
         }
 
         //* Copy constructor

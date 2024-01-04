@@ -3,7 +3,8 @@ namespace OurGP.Nodes.Values.NumericValues
 {
     public class NumericNegation : NumericValue
     {
-        internal static new readonly int minDepth = 2;
+        internal static new readonly int minDepthToLeaf = 2;
+        internal static new readonly int maxDepthToLeaf = int.MaxValue;
         private NumericValue NValue
         {
             get => (NumericValue)_children[0];
@@ -24,19 +25,19 @@ namespace OurGP.Nodes.Values.NumericValues
         }
 
         //* Grow constructor
-        public static new NumericNegation Grow(int maxDepth, int currentDepth = 0, Node? parent = null)
+        public static new NumericNegation Grow(int maxDepth, int minDepth = 0, int currentDepth = 0, Node? parent = null)
         {
             // Console.WriteLine($"ArithmeticOperation.Grow({currentDepth}, {maxDepth})");
-            if (maxDepth - currentDepth < minDepth)
+            if (maxDepth - currentDepth < minDepthToLeaf)
                 throw new System.ArgumentException(GrowErrorMessage(maxDepth, currentDepth));
 
             var node = new NumericNegation(currentDepth, parent);
-            node.NValue = NumericValue.Grow(maxDepth, currentDepth + 1, node);
+            node.NValue = NumericValue.Grow(maxDepth, minDepth, currentDepth + 1, node);
             return node;
         }
         static string GrowErrorMessage(int maxDepth, int currentDepth)
         {
-            return $"From node NumericNegation on depth={currentDepth}:\n\tCannot grow NumericNegation Node of depth={maxDepth - currentDepth},\n\tMinimum depth is {minDepth}";
+            return $"From node NumericNegation on depth={currentDepth}:\n\tCannot grow NumericNegation Node of depth={maxDepth - currentDepth},\n\tMinimum depth is {minDepthToLeaf}";
         }
 
         //* Copy constructor

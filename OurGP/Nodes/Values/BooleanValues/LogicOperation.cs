@@ -8,7 +8,8 @@ namespace OurGP.Nodes.Values.BooleanValues
             Or,
         }
 
-        internal static new readonly int minDepth = 2;
+        internal static new readonly int minDepthToLeaf = 2;
+        internal static new readonly int maxDepthToLeaf = int.MaxValue;
         private Operator _operator;
         private BooleanValue Left
         {
@@ -37,23 +38,23 @@ namespace OurGP.Nodes.Values.BooleanValues
         }
 
         //* Grow constructor
-        public static new LogicOperation Grow(int maxDepth, int currentDepth = 0, Node? parent = null)
+        public static new LogicOperation Grow(int maxDepth, int minDepth = 0, int currentDepth = 0, Node? parent = null)
         {
             // Console.WriteLine($"ComparisonOperation.Grow({currentDepth}, {maxDepth})");
-            if (maxDepth - currentDepth < minDepth)
+            if (maxDepth - currentDepth < minDepthToLeaf)
                 throw new System.ArgumentException(GrowErrorMessage(maxDepth, currentDepth));
 
             var node = new LogicOperation(currentDepth, parent)
             {
                 _operator = (Operator)GP.rd.Next(0, 2)
             };
-            node.Left = BooleanValue.Grow(maxDepth, currentDepth + 1, node);
-            node.Right = BooleanValue.Grow(maxDepth, currentDepth + 1, node);
+            node.Left  = BooleanValue.Grow(maxDepth, minDepth, currentDepth + 1, node);
+            node.Right = BooleanValue.Grow(maxDepth, minDepth, currentDepth + 1, node);
             return node;
         }
         static string GrowErrorMessage(int maxDepth, int currentDepth)
         {
-            return $"From node LogicOperation on depth={currentDepth}:\n\tCannot grow LogicOperation Node of depth={maxDepth - currentDepth},\n\tMinimum depth is {minDepth}";
+            return $"From node LogicOperation on depth={currentDepth}:\n\tCannot grow LogicOperation Node of depth={maxDepth - currentDepth},\n\tMinimum depth is {minDepthToLeaf}";
         }
 
         //* Copy constructor

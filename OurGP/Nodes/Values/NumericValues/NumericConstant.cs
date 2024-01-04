@@ -2,7 +2,8 @@ namespace OurGP.Nodes.Values.NumericValues
 {
     public class NumericConstant : NumericValue, IConstant
     {
-        internal static new readonly int minDepth = 1;
+        internal static new readonly int minDepthToLeaf = 1;
+        internal static new readonly int maxDepthToLeaf = 1;
         private static readonly int _size = 100;
         private static readonly double[] _constants;
         private static int _assignmentCounter = 0;
@@ -41,10 +42,10 @@ namespace OurGP.Nodes.Values.NumericValues
         }
         
         //* Grow constructor
-        public static new NumericConstant Grow(int maxDepth, int currentDepth = 0, Node? parent = null)
+        public static new NumericConstant Grow(int maxDepth, int minDepth = 0, int currentDepth = 0, Node? parent = null)
         {
             // Console.WriteLine($"NumericConstant.Grow({currentDepth}, {maxDepth})");
-            if (maxDepth - currentDepth < minDepth)
+            if (maxDepth - currentDepth < minDepthToLeaf)
                 throw new System.ArgumentException(GrowErrorMessage(maxDepth, currentDepth));
 
             return new NumericConstant(currentDepth, parent)
@@ -54,7 +55,7 @@ namespace OurGP.Nodes.Values.NumericValues
         }
         static string GrowErrorMessage(int maxDepth, int currentDepth)
         {
-            return $"From node NumericConstant on depth={currentDepth}:\n\tCannot grow NumericConstant Node of depth={maxDepth - currentDepth},\n\tMinimum depth is {minDepth}";
+            return $"From node NumericConstant on depth={currentDepth}:\n\tCannot grow NumericConstant Node of depth={maxDepth - currentDepth},\n\tMinimum depth is {minDepthToLeaf}";
         }
 
         //* Copy constructor
