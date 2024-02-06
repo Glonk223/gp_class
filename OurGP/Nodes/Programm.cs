@@ -75,7 +75,7 @@ namespace OurGP.Nodes
 
 
         //! ---------- METHODS ----------
-        public List<Value> Run(List<Value> input, int maxSteps = 1000, string? program = null)
+        public InOutVector Run(List<Value> input, int maxSteps = 500, string? program = null)
         {
             AntlrInputStream inputStream = new(program ?? this.ToString());
             GramLexer gramLexer = new(inputStream);

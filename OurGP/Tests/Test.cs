@@ -24,18 +24,29 @@ while(X0 > 0) {
 print(X9)
 """;
 
+string p = """
+print(23 * -(-((34 + (-(-(34 + (34 / -(-(-(-(34 + (34 / -(-(-(34 + (34 / -(23 * -23))))))) * -(-X5 % (59 * -(-(34 + -(-41))))))))))) / -(23 * -23))) + (34 / -((X3 + 8) * -23)))))
+scan(X5)
+scan(X5)
+scan(X5)
+scan(X5)
+print(23 * -(-(34 + (34 / -(-(-(-(23 + (34 / -(-(-(34 + (34 / -(23 * -23))))))) * -(-X5 % (59 * -(-(34 + -(-41))))))))))))
+print(23 * -(-((34 + (-(-(34 + (34 / -(-(-(-(34 + (34 / -(-(-(34 + (34 / -(23 * -23))))))) * -(-X5 % (59 * -(-(34 + -(-41))))))))))) / -(23 * -23))) + (34 / -((X3 + 8) * -23)))))
+""";
 
-// testGrow(7);
-testGrowFull(7);
+
+// testGrow(6);
+// testGrowFull(6);
 // testLongGrow(100_000, 100);
 // testDeepCopy();
 // testMutation();
 // testCrossover(6);
 
 // testRun(6);
-// testRun2("print(21 % ((-30 / 4) * X4))");
-// testRun2(program1);
+// testRun2("scan(X1)");
+testRun2(program1);
 // testRun2(program2);
+// testRun2(p);
 // testFitness1();
 // testFitness2();
 
@@ -79,7 +90,6 @@ void testMutation(int d = 8)
     Console.WriteLine("----- Mutation -----\n");
 
     p2.Mutate();
-    Console.WriteLine(program);
     Console.WriteLine(p2);
 }
 
@@ -88,16 +98,18 @@ void testCrossover(int d = 8)
     var program1 = Programm.Grow(d);
     var program2 = Programm.Grow(d);
     Console.WriteLine(program1);
+    Console.WriteLine("----------\n");
     Console.WriteLine(program2);
 
     Console.WriteLine("----- Crossover -----\n");
 
     var (c1, c2) = Node.Crossover(program1, program2);
-    // Console.WriteLine(c1);
-    // Console.WriteLine(c2);
+    Console.WriteLine(c1);
+    Console.WriteLine("----------\n");
+    Console.WriteLine(c2);
 
-    Console.WriteLine(program1);
-    Console.WriteLine(program2);
+    // Console.WriteLine(program1);
+    // Console.WriteLine(program2);
 }
 
 void testRun(int d = 8)
@@ -106,7 +118,7 @@ void testRun(int d = 8)
     Console.WriteLine(program);
 
     var result = program.Run(new List<Value>{new(true), new(false)});
-    foreach (var value in result)
+    foreach (var value in result.output)
         Console.Write($"{value.GetNum()}, ");
     Console.WriteLine();
 }
@@ -115,47 +127,59 @@ void testRun2(string program)
 {
     Console.WriteLine(program);
     Programm p = new();
-    var result = p.Run(new List<Value>{new(true), new(false)}, 1000, program);
-    foreach (var value in result)
+
+    var result = p.Run(new List<Value>{new(-5), new(5)}, 1000, program);
+    foreach (var value in result.output)
         Console.Write($"{value.GetNum()}, ");
     Console.WriteLine();
 }
 
-void testFitness1(int d = 8)
-{
-    var program = Programm.Grow(d);
-    Console.WriteLine(program);
+// void testFitness1(int d = 8)
+// {
+//     var program = Programm.Grow(d);
+//     Console.WriteLine(program);
 
-    var result = program.Run(new List<Value>{new(true), new(false)});
-    foreach (var value in result)
-        Console.Write($"{value.GetNum()}, ");
-    Console.WriteLine();
+//     var input = new List<Value>{new(true), new(false)};
+//     var result = program.Run(input);
+//     foreach (var value in result.output)
+//         Console.Write($"{value.GetNum()}, ");
+//     Console.WriteLine();
 
-    double fitness = double.MaxValue;
-    foreach (var value in result)
-    {
-        double val = Math.Abs(value.GetNum() - 1);
-        if (val < fitness)
-            fitness = val;
-    }
+//     double fitness = double.MaxValue;
+//     foreach (var value in result)
+//     {
+//         double val = Math.Abs(value.GetNum() - 1);
+//         if (val < fitness)
+//             fitness = val;
+//     }
 
-    Console.WriteLine("fitenss: " + fitness);
-}
+//     Console.WriteLine("fitenss: " + fitness);
+// }
 
-void testFitness2(int d = 8)
-{
-    var program = Programm.Grow(d);
-    Console.WriteLine(program);
+// void testFitness2(int d = 8)
+// {
+//     var program = Programm.Grow(d);
+//     Console.WriteLine(program);
 
-    var result = program.Run(new List<Value>{new(true), new(false)});
-    foreach (var value in result)
-        Console.Write($"{value.GetNum()}, ");
-    Console.WriteLine();
+//     var result = program.Run(new List<Value>{new(true), new(false)});
+//     foreach (var value in result)
+//         Console.Write($"{value.GetNum()}, ");
+//     Console.WriteLine();
 
-    var firstNum = result.Count() > 0 ? result[0].GetNum() : Double.MaxValue;
-    double fitness = Math.Abs(firstNum - 1);
-    fitness += result.Count - 1;
+//     var firstNum = result.Count() > 0 ? result[0].GetNum() : Double.MaxValue;
+//     double fitness = Math.Abs(firstNum - 1);
+//     fitness += result.Count - 1;
 
-    Console.WriteLine("fitenss: " + fitness);
-}
+//     Console.WriteLine("fitenss: " + fitness);
+// }
 
+print(True)
+X1 = X5
+
+print(-(99 % X2))
+print(99)
+print(11)
+print((-48 + ((((((-48 + (((((-(-94) + (76 * 11)) + (11 * 76)) / -48) / -94) * 11)) + 11) + (11 * 76)) / -94) / -94) * 11)) + (11 * 76))
+
+print(((-((X0 / -38) / X1) * -(X9 / X3)) * (15 / (X4 / X7))) + (99 * (((((((99 + 99) + 20) + 99) + 17) + 99) + 20) + 99)))
+print(((99 * (((99 + 99) + 20) + 99)) + 17) + 15)

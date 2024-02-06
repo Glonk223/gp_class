@@ -1,0 +1,587 @@
+0 ------------------------------
+scan(X2)
+print(False)
+
+1 ------------------------------
+scan(X7)
+print(52 + X7)
+
+2 ------------------------------
+scan(X7)
+print(52 + X7)
+
+3 ------------------------------
+scan(X1)
+print(X1)
+
+4 ------------------------------
+scan(X1)
+print(X1)
+
+5 ------------------------------
+scan(X1)
+print(X1)
+
+6 ------------------------------
+scan(X1)
+print(X1)
+
+7 ------------------------------
+scan(X1)
+print(X1)
+
+8 ------------------------------
+if (L3) {
+  L7 = !True
+}
+if (!False) {
+  scan(X5)
+}
+scan(X1)
+print(False)
+
+9 ------------------------------
+if (False) {
+  scan(X5)
+}
+if (!False) {
+  scan(X5)
+}
+scan(X9)
+print(False)
+
+10 ------------------------------
+if (!False) {
+  scan(X5)
+}
+if (!!False) {
+  scan(X2)
+}
+scan(X1)
+print(False)
+
+11 ------------------------------
+scan(X2)
+scan(X5)
+scan(X1)
+print(False)
+
+12 ------------------------------
+scan(X1)
+if (!False) {
+  scan(X5)
+}
+scan(X9)
+print(False)
+
+13 ------------------------------
+scan(X1)
+if (!False) {
+  scan(X5)
+}
+scan(X9)
+print(False)
+
+14 ------------------------------
+if (!False) {
+  scan(X1)
+}
+scan(X7)
+scan(X1)
+print(False)
+
+15 ------------------------------
+scan(X1)
+if (!False) {
+  scan(X5)
+}
+scan(X5)
+print(False)
+
+16 ------------------------------
+scan(X1)
+if (!False) {
+  scan(X5)
+}
+scan(X5)
+print(False)
+
+17 ------------------------------
+scan(X1)
+if (!False) {
+  scan(X5)
+}
+scan(X5)
+print(False)
+
+18 ------------------------------
+scan(X9)
+scan(X5)
+scan(X7)
+print(False)
+
+19 ------------------------------
+scan(X5)
+if (False) {
+  if (!!False) {
+    scan(X5)
+  }
+}
+scan(X1)
+print(False)
+
+20 ------------------------------
+scan(X5)
+if (False) {
+  if (!!False) {
+    scan(X5)
+  }
+}
+scan(X1)
+print(False)
+
+21 ------------------------------
+if (!False) {
+  scan(X5)
+}
+scan(X9)
+scan(L9)
+print(!!False)
+
+22 ------------------------------
+scan(X1)
+scan(X2)
+scan(X2)
+print(False)
+
+23 ------------------------------
+scan(X8)
+scan(X9)
+scan(X2)
+print(False)
+
+24 ------------------------------
+scan(X8)
+if (False) {
+  print(False)
+}
+if (!False) {
+  scan(X4)
+}
+print(False)
+
+25 ------------------------------
+scan(X1)
+if (False) {
+  scan(X9)
+}
+if (!False) {
+  scan(X4)
+}
+print(False)
+
+26 ------------------------------
+scan(X8)
+scan(X5)
+scan(X2)
+print(False)
+
+27 ------------------------------
+scan(X7)
+scan(X1)
+scan(X4)
+print(False)
+
+28 ------------------------------
+scan(X1)
+X3 = -25
+scan(X9)
+print(False)
+
+29 ------------------------------
+scan(X1)
+X3 = -25
+scan(X9)
+print(False)
+
+30 ------------------------------
+scan(X2)
+scan(X1)
+scan(X6)
+print(False)
+
+31 ------------------------------
+scan(X9)
+scan(X1)
+scan(X6)
+print(False)
+
+32 ------------------------------
+if (!False) {
+  scan(X1)
+}
+scan(X4)
+scan(X1)
+print(False)
+
+33 ------------------------------
+if (False) {
+  scan(X9)
+}
+scan(X7)
+if (!False) {
+  scan(X4)
+}
+print(False)
+
+34 ------------------------------
+if (False) {
+  scan(X0)
+}
+scan(X8)
+scan(X9)
+print(False)
+
+35 ------------------------------
+if (!False) {
+  scan(X0)
+}
+scan(X8)
+scan(X9)
+print(False)
+
+36 ------------------------------
+scan(X7)
+scan(X5)
+scan(X7)
+print(False)
+
+37 ------------------------------
+scan(X0)
+scan(X0)
+scan(X9)
+print(False)
+
+38 ------------------------------
+scan(X7)
+scan(X9)
+if (False) {
+  scan(X9)
+}
+print(False)
+
+39 ------------------------------
+scan(X7)
+scan(X9)
+if (False) {
+  scan(X9)
+}
+print(False)
+
+40 ------------------------------
+scan(X7)
+scan(X9)
+if (False) {
+  scan(X9)
+}
+print(False)
+
+41 ------------------------------
+scan(X7)
+scan(X9)
+if (False) {
+  scan(X9)
+}
+print(False)
+
+42 ------------------------------
+scan(X7)
+scan(X9)
+if (False) {
+  scan(X9)
+}
+print(False)
+
+43 ------------------------------
+scan(X8)
+scan(X2)
+scan(X0)
+print(False)
+
+44 ------------------------------
+scan(X6)
+scan(X1)
+scan(X7)
+print(False)
+
+45 ------------------------------
+scan(X4)
+scan(X1)
+scan(X7)
+print(False)
+
+46 ------------------------------
+scan(X7)
+scan(X4)
+scan(X8)
+scan(X9)
+print(False)
+
+47 ------------------------------
+scan(X1)
+scan(X0)
+scan(X8)
+print(False)
+
+48 ------------------------------
+scan(X0)
+scan(X7)
+scan(X5)
+print(False)
+
+49 ------------------------------
+scan(X8)
+scan(X1)
+scan(X9)
+print(False)
+
+50 ------------------------------
+scan(X7)
+scan(X4)
+scan(X7)
+print(False)
+
+51 ------------------------------
+scan(X1)
+scan(X0)
+scan(X4)
+print(False)
+
+52 ------------------------------
+scan(X7)
+scan(X8)
+scan(X9)
+print(False)
+
+53 ------------------------------
+print(False)
+scan(X1)
+scan(X4)
+scan(X1)
+
+54 ------------------------------
+print(False)
+scan(X1)
+scan(X4)
+scan(X1)
+
+55 ------------------------------
+scan(X4)
+scan(X7)
+scan(X9)
+print(False)
+
+56 ------------------------------
+scan(X9)
+scan(X7)
+scan(X8)
+print(False)
+
+57 ------------------------------
+scan(X7)
+scan(X4)
+scan(X4)
+print(False)
+
+58 ------------------------------
+scan(X2)
+scan(X8)
+scan(X8)
+print(False)
+
+59 ------------------------------
+scan(X1)
+scan(X2)
+scan(L5)
+print(False)
+
+60 ------------------------------
+scan(X4)
+scan(X1)
+scan(X8)
+scan(X7)
+print(False)
+
+61 ------------------------------
+scan(X4)
+scan(X4)
+scan(X1)
+print(False)
+
+62 ------------------------------
+scan(X8)
+scan(X0)
+scan(X8)
+print(False)
+
+63 ------------------------------
+scan(X2)
+scan(X7)
+scan(X2)
+print(False)
+
+64 ------------------------------
+scan(X9)
+scan(X4)
+scan(X2)
+scan(X8)
+print(False)
+
+65 ------------------------------
+scan(X9)
+scan(X4)
+scan(X2)
+scan(X8)
+print(False)
+
+66 ------------------------------
+scan(X6)
+scan(X4)
+scan(X1)
+print(False)
+
+67 ------------------------------
+scan(X4)
+scan(X3)
+scan(X4)
+print(False)
+
+68 ------------------------------
+scan(X0)
+scan(X6)
+while (L4) {
+  print(!False)
+  print(X9)
+}
+print(X0 - (X4 / 21))
+
+69 ------------------------------
+scan(X8)
+scan(L3)
+scan(X0)
+print(X0 - (X4 / 21))
+
+70 ------------------------------
+scan(X8)
+scan(X4)
+scan(X0)
+print(X0 - (X4 / 21))
+
+71 ------------------------------
+scan(X8)
+scan(X4)
+scan(X0)
+print(X0 - (X4 / 21))
+
+72 ------------------------------
+scan(X6)
+scan(X4)
+scan(X0)
+print(X0 - (X4 / 21))
+
+73 ------------------------------
+scan(X1)
+scan(X4)
+scan(X0)
+print((X0 - (X4 / 21)) - (X4 / 21))
+
+74 ------------------------------
+scan(X1)
+scan(X4)
+scan(X0)
+print((X0 - (X4 / 21)) - (X4 / 21))
+
+75 ------------------------------
+scan(X1)
+scan(X4)
+scan(X0)
+print((X0 - (X4 / 21)) - (X4 / 21))
+
+76 ------------------------------
+scan(X4)
+scan(X4)
+scan(X0)
+print((X0 - (X4 / 21)) - (X4 / 21))
+
+77 ------------------------------
+scan(X4)
+scan(X4)
+scan(X0)
+print((X0 - (X4 / 21)) - (X4 / 21))
+
+78 ------------------------------
+scan(X0)
+scan(X4)
+scan(X0)
+print((((X0 - (X4 / 21)) - (X4 / 21)) - (X4 / 21)) - (X4 / 21))
+
+79 ------------------------------
+scan(X1)
+scan(X4)
+scan(X0)
+print((((X0 - (X4 / 21)) - (X4 / 21)) - (X4 / 21)) - (X4 / X0))
+
+80 ------------------------------
+scan(X0)
+scan(X4)
+scan(X0)
+print((X0 - X4) - (X4 / 21))
+
+81 ------------------------------
+scan(X0)
+scan(X4)
+scan(X0)
+print((X0 - X4) - (X4 / 21))
+
+82 ------------------------------
+scan(X4)
+scan(X4)
+scan(X0)
+print((X0 - X4) - (X4 / 21))
+
+83 ------------------------------
+scan(X0)
+scan(X4)
+scan(X0)
+print((X0 - X4) - ((66 * X2) % -12))
+
+84 ------------------------------
+scan(X0)
+scan(X4)
+scan(X0)
+print((X0 - X4) - ((66 * X2) % -12))
+
+85 ------------------------------
+scan(X0)
+scan(X4)
+scan(X0)
+print((X0 - X4) - ((66 * X2) % -12))
+
+86 ------------------------------
+scan(X4)
+scan(X4)
+scan(X0)
+print((X0 - X4) - (X4 / 74))
+
+87 ------------------------------
+scan(X4)
+scan(X4)
+scan(X0)
+print((X0 - X4) - (X4 / X4))
+
+88 ------------------------------
+scan(X0)
+scan(X4)
+scan(X0)
+print(X0 - X4)
+

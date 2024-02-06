@@ -103,31 +103,19 @@ namespace OurGP.Nodes;
         private static bool AreSwapable(Node? a, Node? b)
         {
             if (a == null || b == null)
-            {
-                // Console.WriteLine("a or b is null");
                 return false;
-            }
             
             if (a.parent == null || b.parent == null)
-            {
-                // Console.WriteLine("a.parent or b.parent is null");
                 return false;
-            }
 
             var parAaccepts = a.parent.GetReplacementType(a);
             var parBaccepts = b.parent.GetReplacementType(b);
 
             if (!b.GetType().IsSubclassOf(parAaccepts))
-            {
-                // Console.WriteLine($"{b.GetType().Name} is not subclass of {parAaccepts.Name}");
                 return false;
-            }
 
             if (!a.GetType().IsSubclassOf(parBaccepts))
-            {
-                // Console.WriteLine($"{a.GetType().Name} is not subclass of {parBaccepts.Name}");
                 return false;
-            }
             
             return true;
         }
@@ -135,48 +123,15 @@ namespace OurGP.Nodes;
         public override string ToString() { return ToString(indent: ""); }
         public abstract string ToString(string indent);
 
-        // public Node GetNodeRandom()
-        // {
-        //     Queue<Node> queue = new();
-        //     Queue<Node> leaves = new();
-        //     queue.Enqueue(this);
-            
-        //     while (queue.Count > 0)
-        //     {
-        //         var node = queue.Dequeue();
-
-        //         if (node.subtreeCount == 1)
-        //             leaves.Enqueue(node);
-
-        //         if (GP.rd.NextDouble() < PICK_THIS_CHANCE && node.parent != null)
-        //             return node;
-
-        //         foreach (var child in node._children)
-        //             queue.Enqueue(child);
-        //     }
-            
-        //     foreach (var leaf in leaves)
-        //     {
-        //         if (GP.rd.NextDouble() < PICK_THIS_CHANCE && leaf.parent != null)
-        //             return leaf;
-        //     }
-
-        //     Console.WriteLine("Motyla Noga 🦋🦵!!!");
-        //     return GetNodeRandom();
-        // }
-
         public Node GetNodeRandom()
         {
-            // Is leaf -> return this
+            //* Is leaf -> return this
             if (subtreeCount == 1)
                 return this;
 
             if (GP.rd.NextDouble() < PICK_THIS_CHANCE && parent != null)
                 return this;
             return _children[GP.rd.Next(_children.Length)].GetNodeRandom();
-            // int index = GP.rd.Next(subtreeCount-1)+1;
-            // // Console.WriteLine($"GetRandomNode() => {index}");
-            // return GetNodeAt(index);
         }
         public Node GetNodeAt(int index)
         {
@@ -242,21 +197,10 @@ namespace OurGP.Nodes;
             do
             {
                 node1 = child1.GetNodeRandom();
-                // Console.WriteLine($"node1 type: {node1.GetType().Name}");
-                // Console.WriteLine($"node1 parent type: {node1.parent?.GetType().Name}");
-
                 var replacementType = node1.parent!.GetReplacementType(node1);
-                // Console.WriteLine($"replacementType: {replacementType.Name}");
-
                 node2 = child2.GetNodeOfTypeRandom(replacementType);
-                // Console.WriteLine($"node2 type: {node2?.GetType().Name}");
-                // Console.WriteLine($"node2 parent type: {node2?.parent?.GetType().Name}");
-
-                // Console.WriteLine($"AreSwapable: {Node.AreSwapable(node1, node2)}");
-                // Console.ReadKey();
             }
             while (!Node.AreSwapable(node1, node2));
-
 
             Swap(ref node1, ref node2!);
             return (child1, child2);

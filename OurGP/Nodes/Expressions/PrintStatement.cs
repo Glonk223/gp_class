@@ -11,18 +11,9 @@ namespace OurGP.Nodes.Expressions
             get => (Value)_children[0];
             set => _children[0] = value;
         }
-        // TODO: Create IOut interface and implement it in ConsoleOut
-        // private static IOut output;
 
 
         //! ---------- CONSTRUCTORS ----------
-        //* Static constructor
-        static PrintStatement()
-        {
-            // TODO: Make this configurable
-            // output = 
-        }
-
         //* Depth constructor
         public PrintStatement(int depth, Node? parent)
             : base(1, depth, parent) { }

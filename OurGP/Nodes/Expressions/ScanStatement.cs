@@ -18,18 +18,9 @@ namespace OurGP.Nodes.Expressions
             get => (IVariable)_children[0];
             set => _children[0] = (Node)value;
         }
-        // TODO: Create IIn interface
-        // private IIn input;
 
 
         //! ---------- CONSTRUCTORS ----------
-        //* Static constructor
-        static ScanStatement()
-        {
-            // TODO: Make this configurable
-            // input = 
-        }
-
         //* Depth constructor
         public ScanStatement(int depth, Node? parent)
             : base(1, depth, parent) { }

@@ -7,13 +7,13 @@ namespace Fitness;
 class FitnessFunction
 {
     static readonly double _outputLenghtPunishment = 1e9;
-    static readonly double _valuePunishment        = 1e1;
+    static readonly double _valuePunishment = 1e1;
     static readonly double _inputNotReadPunishment = 1e9;
-    static readonly double _usedInputPunishment    = 1e3;
-    readonly bool restrictOutputLength   = true;
-    readonly bool restrictOutputPosition = true;
-    readonly bool checkIfReadInput       = true;
-    readonly bool checkUsedInput         = true;
+    static readonly double _usedInputPunishment = 1e3;
+    readonly bool restrictOutputLength;
+    readonly bool restrictOutputPosition;
+    readonly bool checkIfReadInput;
+    readonly bool checkUsedInput;
     readonly List<Target> targets;
     InOutVector? ioVector;
 

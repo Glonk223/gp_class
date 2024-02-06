@@ -5,7 +5,7 @@ using OutInterface;
 static class GP
 {
     static readonly int
-        POPULATION_SIZE = 100,
+        POPULATION_SIZE = 200,
         MAX_GENERATIONS = 100,
         OPERATIONS_PER_GENERATION = 200,
         TOURNAMENT_SIZE = 2;
@@ -103,8 +103,8 @@ static class GP
 
         statisticsOut.PrintLine(genStats);
         consoleOut.PrintLine(genStats);
-        programOut.PrintLine(BestIndividual.Program.ToString());
         programOut.PrintLine(genNumber + " ------------------------------");
+        programOut.PrintLine(BestIndividual.Program.ToString());
     }
 
     static void PrintSolution(bool foundSolution)
@@ -214,14 +214,14 @@ static class GP
 
 
     //! ---------- MAIN ----------
-    static void Main(string[] args)
-    {
-        string folder = "./data/";
+    // static void Main(string[] args)
+    // {
+    //     string folder = "./data/zad1.2.B/";
 
-        Setup(new FitnessFunction(folder + "data.txt", true));
-        SetupOutput(folder + "program.txt", folder + "statistics.csv");
-        CreatePopulation();
+    //     Setup(new FitnessFunction(folder + "data.txt", true, true, true, true));
+    //     SetupOutput(folder + "program.txt", folder + "statistics.csv");
+    //     CreatePopulation();
 
-        Run();
-    }
+    //     Run();
+    // }
 }

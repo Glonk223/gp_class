@@ -31,5 +31,5 @@ class Individual
 
 
     //! ---------- RUN ----------
-    public List<Value> Run(List<Value> inputs) => Program.Run(inputs);
+    public InOutVector Run(List<Value> inputs) => Program.Run(inputs);
 }

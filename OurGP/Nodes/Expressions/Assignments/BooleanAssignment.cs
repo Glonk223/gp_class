@@ -5,7 +5,7 @@ namespace OurGP.Nodes.Expressions.Assignments
     public class BooleanAssignment : Assignment
     {
         internal static new readonly int minDepthToLeaf = 2;
-        internal static new readonly int maxDepthToLeaf = int.MaxValue;
+        internal static new readonly int maxDepthToLeaf = 2;
         private BooleanVariable Variable
         {
             get => (BooleanVariable)_children[0];

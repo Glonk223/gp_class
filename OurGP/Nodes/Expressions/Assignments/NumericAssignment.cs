@@ -5,7 +5,7 @@ namespace OurGP.Nodes.Expressions.Assignments
     public class NumericAssignment : Assignment
     {
         internal static new readonly int minDepthToLeaf = 2;
-        internal static new readonly int maxDepthToLeaf = int.MaxValue;
+        internal static new readonly int maxDepthToLeaf = 2;
         private NumericVariable Variable
         {
             get => (NumericVariable)_children[0];

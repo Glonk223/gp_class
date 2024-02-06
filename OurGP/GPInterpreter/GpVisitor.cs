@@ -1,7 +1,7 @@
 using System.Runtime.InteropServices;
 using System.Security.Principal;
 using Antlr4.Runtime.Tree;
-using Microsoft.CSharp.RuntimeBinder;
+using GPInterpreter;
 
 namespace GPInterpreter;
 
@@ -11,11 +11,10 @@ public class GpVisitor : GramBaseVisitor<Value>
     private List<bool> _boolVariables = Enumerable.Repeat(false, 10).ToList();
     public static int operations;
     public  int maxOperations;
-    private List<Value> _input = new List<Value>();
-    private List<Value> _output = new List<Value>();
-    private int _inputCounter;
+    private InOutVector _ioVector;
+    public bool printFlag = false;
 
-    public List<Value> ourVisit(IParseTree tree)
+    public InOutVector ourVisit(IParseTree tree)
     {
         try
         {
@@ -23,11 +22,11 @@ public class GpVisitor : GramBaseVisitor<Value>
         }
         catch (RuntimeInstructions e)
         {
-            Console.WriteLine(e.Message);
-            return _output;
+            // Console.WriteLine(e.Message);
+            return _ioVector;
         }
 
-        return _output;
+        return _ioVector;
     }
 
     public void handleOperations()
@@ -42,16 +41,15 @@ public class GpVisitor : GramBaseVisitor<Value>
     public GpVisitor(List<Value> input, int maxOperations)
     {
         operations = 0;
-        _inputCounter = 0;
         this.maxOperations = maxOperations;
-        _input = input;
+        _ioVector = new InOutVector(input);
     }
     
     public override Value VisitIf_statement(GramParser.If_statementContext context)
     {
-        handleOperations();
         if (Visit(context.bool_value()).GetBool())
         {
+            handleOperations();
             return Visit(context.expressions());
         }
         else
@@ -62,9 +60,9 @@ public class GpVisitor : GramBaseVisitor<Value>
 
     public override Value VisitWhile_loop(GramParser.While_loopContext context)
     {
-        handleOperations();
         while (Visit(context.bool_value()).GetBool())
         {
+            handleOperations();
             Visit(context.expressions());
         }
         return new Value(Visit(context.bool_value()).GetBool());
@@ -73,36 +71,46 @@ public class GpVisitor : GramBaseVisitor<Value>
     public override Value VisitPrintNum(GramParser.PrintNumContext context)
     {
         handleOperations();
+        printFlag = true;
         Value val = Visit(context.numeric_value());
-        _output.Add(val);
+        printFlag = false;
+        _ioVector.Add(val);
         return val;
     }
 
     public override Value VisitPrintBool(GramParser.PrintBoolContext context)
     {
         handleOperations();
+        printFlag = true;
         Value val = Visit(context.bool_value());
-        _output.Add(val);
+        printFlag = false;
+        _ioVector.Add(val);
         return val;
     }
 
     public override Value VisitScanNum(GramParser.ScanNumContext context)
     {
         handleOperations();
+        if (_ioVector.input.Count == 0)
+            return new Value(0);
+
         string varName = context.NUM_VAR().GetText();
         int varNum = varName[1] - '0';
-        _numVariables[varNum] = _input[_inputCounter % _input.Count].GetNum();
-        _inputCounter++;
+        _numVariables[varNum] = _ioVector.Read().GetNum();
+        _ioVector.scanned[varNum] = true;
         return new Value(_numVariables[varNum]);
     }
 
     public override Value VisitScanBool(GramParser.ScanBoolContext context)
     {
         handleOperations();
+        if (_ioVector.input.Count == 0)
+            return new Value(0);
+        
         string varName = context.BOOL_VAR().GetText();
         int varNum = varName[1] - '0';
-        _boolVariables[varNum] = _input[_inputCounter % _input.Count].GetBool();
-        _inputCounter++;
+        _boolVariables[varNum] = _ioVector.Read().GetBool();
+        // _ioVector.scanned[varNum+10] = true;
         return new Value(_numVariables[varNum]);
     }
 
@@ -112,6 +120,7 @@ public class GpVisitor : GramBaseVisitor<Value>
         string varName = context.NUM_VAR().GetText();
         int varNum = varName[1] - '0';
         _numVariables[varNum] = Visit(context.numeric_value()).GetNum();
+        // _ioVector.scanned[varNum] = true;
         return new Value(_numVariables[varNum]);
     }
 
@@ -121,6 +130,7 @@ public class GpVisitor : GramBaseVisitor<Value>
         string varName = context.BOOL_VAR().GetText();
         int varNum = varName[1] - '0';
         _boolVariables[varNum] = Visit(context.bool_value()).GetBool();
+        // _ioVector.scanned[varNum] = true;
         return new Value(_boolVariables[varNum]);
     }
     
@@ -128,6 +138,17 @@ public class GpVisitor : GramBaseVisitor<Value>
     {
         string varName = context.BOOL_VAR().GetText();
         int varNum = varName[1] - '0';
+        // if(printFlag && _ioVector.scanned[varNum+10])
+        //     _ioVector.used[varNum+10]++;
+        // else if(printFlag)
+        //     _ioVector.used[varNum+10]--;
+
+        // if(printFlag && !_ioVector.scanned[varNum+10])
+        //     _ioVector.used[varNum+10]--;
+
+        if(!_ioVector.scanned[varNum+10])
+            _ioVector.used[varNum+10]--;
+
         return new Value(_boolVariables[varNum]);
     }
     
@@ -206,6 +227,17 @@ public class GpVisitor : GramBaseVisitor<Value>
     {
         string varName = context.NUM_VAR().GetText();
         int varNum = varName[1] - '0';
+        // if(printFlag && _ioVector.scanned[varNum])
+        //     _ioVector.used[varNum]++;
+        // else if(printFlag)
+        //     _ioVector.used[varNum]--;
+
+        // if(printFlag && !_ioVector.scanned[varNum])
+        //     _ioVector.used[varNum]--;
+
+        if(!_ioVector.scanned[varNum])
+            _ioVector.used[varNum]--;
+
         return new Value(_numVariables[varNum]);
     }
     
